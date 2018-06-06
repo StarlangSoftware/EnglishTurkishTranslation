@@ -53,3 +53,5 @@ nb-configuration.xml
 release.properties
 pom.xml.releaseBackup
 pom.xml.tag
+out/artifacts/Translation_jar/Translation.jar
+out/production/Translation/libs/MorphologicalAnalysis.jar

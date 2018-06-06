@@ -1,9 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="Translation:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/Translation_jar</output-path>
-    <root id="archive" name="Translation.jar">
-      <element id="module-output" name="Translation" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/src/libs/MorphologicalAnalysis.jar" path-in-jar="/" />
-    </root>
-  </artifact>
-</component>
