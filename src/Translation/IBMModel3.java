@@ -27,21 +27,24 @@ public class IBMModel3 extends IBMModel2{
         int i, j, k, l, iterationCount = 0, nullCount, fertilityCount;
         fertility = new HashMap<String, int[]>();
         distortionDistribution = new double[toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][toLanguage.maxSentenceLength()];
-        for (i = 0; i < toLanguage.maxSentenceLength(); i++)
-            for (j = 0; j < fromLanguage.maxSentenceLength(); j++)
-                for (k = 0; k < fromLanguage.maxSentenceLength(); k++)
-                    for (l = 0; l < toLanguage.maxSentenceLength(); l++)
+        for (i = 0; i < toLanguage.maxSentenceLength(); i++) {
+            for (j = 0; j < fromLanguage.maxSentenceLength(); j++) {
+                for (k = 0; k < fromLanguage.maxSentenceLength(); k++) {
+                    for (l = 0; l < toLanguage.maxSentenceLength(); l++) {
                         distortionDistribution[i][j][k][l] = 1.0 / (toLanguage.maxSentenceLength() + 1);
-
+                    }
+                }
+            }
+        }
         p0 = 0.5;
         p1 = 0.5;
         while (iterationCount < maxIteration){
             countP0 = 0.0;
             countP1 = 0.0;
-            count_f = new HashMap<String, double[]>();
-            total_f = new HashMap<String, Double>();
-            count_t = new HashMap<String, Map<String, Double>>();
-            total_t = new HashMap<String, Double>();
+            count_f = new HashMap<>();
+            total_f = new HashMap<>();
+            count_t = new HashMap<>();
+            total_t = new HashMap<>();
             count_d = new double[toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][toLanguage.maxSentenceLength()];
             total_d = new double[toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()];
             for (k = 0; k < fromLanguage.sentenceCount(); k++){
@@ -64,7 +67,7 @@ public class IBMModel3 extends IBMModel2{
                             t = toSentence.getWord(j).getName();
                             f = fromSentence.getWord(a.get(j)).getName();
                             if (!count_t.containsKey(f))
-                                count_t.put(f, new HashMap<String, Double>());
+                                count_t.put(f, new HashMap<>());
                             if (!count_t.get(f).containsKey(t))
                                 count_t.get(f).put(t, c);
                             else
@@ -79,27 +82,32 @@ public class IBMModel3 extends IBMModel2{
                     countP0 += (toSentence.wordCount() - 2 * nullCount) * c;
                     for (j = 0; j < fromSentence.wordCount(); j++){
                         fertilityCount = 0;
-                        for (i = 0; i < toSentence.wordCount(); i++)
-                            if (j == a.get(i))
+                        for (i = 0; i < toSentence.wordCount(); i++) {
+                            if (j == a.get(i)) {
                                 fertilityCount++;
+                            }
+                        }
                         f = fromSentence.getWord(j).getName();
-                        if (!count_f.containsKey(f))
+                        if (!count_f.containsKey(f)) {
                             count_f.put(f, new double[MAX_FERTILITY]);
+                        }
                         double[] counts = count_f.get(f);
                         counts[fertilityCount] += c;
                         count_f.put(f, counts);
-                        if (!total_f.containsKey(f))
+                        if (!total_f.containsKey(f)) {
                             total_f.put(f, c);
-                        else
+                        } else {
                             total_f.put(f, total_f.get(f) + c);
+                        }
                     }
                 }
             }
             for (String word : translationDistribution.keySet()) {
                 f = word;
                 int [] counts = new int[MAX_FERTILITY];
-                for (j = 0; j < MAX_FERTILITY; j++)
+                for (j = 0; j < MAX_FERTILITY; j++) {
                     counts[j] = (int) (count_f.get(f)[j] / total_f.get(f));
+                }
                 fertility.put(f, counts);
             }
             for (String word : translationDistribution.keySet()) {
@@ -109,11 +117,15 @@ public class IBMModel3 extends IBMModel2{
                     translationDistribution.get(f).put(t, count_t.get(f).get(t) / total_t.get(f));
                 }
             }
-            for (i = 0; i < toLanguage.maxSentenceLength(); i++)
-                for (j = 0; j < fromLanguage.maxSentenceLength(); j++)
-                    for (k = 0; k < fromLanguage.maxSentenceLength(); k++)
-                        for (l = 0; l < toLanguage.maxSentenceLength(); l++)
+            for (i = 0; i < toLanguage.maxSentenceLength(); i++) {
+                for (j = 0; j < fromLanguage.maxSentenceLength(); j++) {
+                    for (k = 0; k < fromLanguage.maxSentenceLength(); k++) {
+                        for (l = 0; l < toLanguage.maxSentenceLength(); l++) {
                             distortionDistribution[i][j][k][l] = count_d[i][j][k][l] / total_d[i][j][k];
+                        }
+                    }
+                }
+            }
             p1 = countP1 / (countP0 + countP1);
             p0 = 1 - p1;
             iterationCount++;
@@ -124,32 +136,38 @@ public class IBMModel3 extends IBMModel2{
         int i, j, j1, j2, tmp;
         Sentence fromSentence = a.from(), toSentence = a.to();
         ArrayList<WordAlignment> N;
-        N = new ArrayList<WordAlignment>();
-        for (j = 0; j < toSentence.wordCount(); j++)
-            if (j != jPegged)
-                for (i = 0; i < fromSentence.wordCount() + 1; i++){
+        N = new ArrayList<>();
+        for (j = 0; j < toSentence.wordCount(); j++) {
+            if (j != jPegged) {
+                for (i = 0; i < fromSentence.wordCount() + 1; i++) {
                     WordAlignment newAlignment = a.copy();
                     newAlignment.set(j, i);
                     N.add(newAlignment);
                 }
-        for (j1 = 0; j1 < toSentence.wordCount(); j1++)
-            if (j1 != jPegged)
-                for (j2 = 0; j2 < toSentence.wordCount(); j2++)
-                    if (j2 != jPegged){
+            }
+        }
+        for (j1 = 0; j1 < toSentence.wordCount(); j1++) {
+            if (j1 != jPegged) {
+                for (j2 = 0; j2 < toSentence.wordCount(); j2++) {
+                    if (j2 != jPegged) {
                         WordAlignment newAlignment = a.copy();
                         tmp = a.get(j1);
                         newAlignment.set(j1, a.get(j2));
                         newAlignment.set(j2, tmp);
                         N.add(newAlignment);
                     }
+                }
+            }
+        }
         return N;
     }
 
     private double factorial(int n){
         int i;
         double result = 1.0;
-        for (i = 2; i <= n; i++)
+        for (i = 2; i <= n; i++) {
             result *= i;
+        }
         return result;
     }
 
@@ -170,11 +188,12 @@ public class IBMModel3 extends IBMModel2{
             maxP = 0.0;
             phi[i] = 1;
             if (fertility.containsKey(f)){
-                for (j = 0; j < MAX_FERTILITY; j++)
-                    if (fertility.get(f)[j] > maxP){
+                for (j = 0; j < MAX_FERTILITY; j++) {
+                    if (fertility.get(f)[j] > maxP) {
                         maxP = fertility.get(f)[j];
                         phi[i] = j;
                     }
+                }
             }
             sum += phi[i];
         }
@@ -185,11 +204,13 @@ public class IBMModel3 extends IBMModel2{
         result /= factorial(phi_0);
         for (i = 0; i < fromSentence.wordCount(); i++){
             f = fromSentence.getWord(i).getName();
-            if (fertility.containsKey(f))
+            if (fertility.containsKey(f)) {
                 result *= phi[i] * fertility.get(f)[phi[i]];
-            else
-                if (phi[i] != 1)
+            } else {
+                if (phi[i] != 1) {
                     result = 0.0;
+                }
+            }
         }
         for (j = 0; j < toSentence.wordCount(); j++){
             if (a.get(j) < fromSentence.wordCount()){
@@ -224,27 +245,28 @@ public class IBMModel3 extends IBMModel2{
         double alignmentScore, bestAlignmentScore = -1;
         ArrayList<WordAlignment> a;
         String f, t;
-        a = new ArrayList<WordAlignment>();
+        a = new ArrayList<>();
         for (j = 0; j < toSentence.wordCount(); j++){
             for (i = 0; i < fromSentence.wordCount(); i++){
                 WordAlignment wa = new WordAlignment(toSentence, fromSentence);
                 wa.set(j, i);
-                for (jPrime = 0; jPrime < toSentence.wordCount(); jPrime++)
-                    if (jPrime != j){
+                for (jPrime = 0; jPrime < toSentence.wordCount(); jPrime++) {
+                    if (jPrime != j) {
                         t = toSentence.getWord(jPrime).getName();
                         bestAlignment = -1;
-                        for (k = 0; k < fromSentence.wordCount(); k++){
+                        for (k = 0; k < fromSentence.wordCount(); k++) {
                             f = fromSentence.getWord(k).getName();
                             alignmentScore = translationDistribution.get(f).get(t) * alignmentDistribution[toSentence.wordCount()][fromSentence.wordCount()][jPrime][k];
-                            if (alignmentScore > bestAlignmentScore){
+                            if (alignmentScore > bestAlignmentScore) {
                                 bestAlignmentScore = alignmentScore;
                                 bestAlignment = k;
                             }
                         }
-                        if (bestAlignment != -1){
+                        if (bestAlignment != -1) {
                             wa.set(jPrime, bestAlignment);
                         }
                     }
+                }
                 WordAlignment bestLocal = hillClimbing(wa, j);
                 a.addAll(neighboring(bestLocal, j));
             }

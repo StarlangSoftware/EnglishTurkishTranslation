@@ -21,15 +21,19 @@ public class IBMModel2 extends IBMModel1{
         int i, j, k, l, iterationCount = 0;
         String f, t;
         alignmentDistribution = new double[toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()];
-        for (i = 0; i < toLanguage.maxSentenceLength(); i++)
-            for (j = 0; j < fromLanguage.maxSentenceLength(); j++)
-                for (k = 0; k < toLanguage.maxSentenceLength(); k++)
-                    for (l = 0; l < fromLanguage.maxSentenceLength(); l++)
+        for (i = 0; i < toLanguage.maxSentenceLength(); i++) {
+            for (j = 0; j < fromLanguage.maxSentenceLength(); j++) {
+                for (k = 0; k < toLanguage.maxSentenceLength(); k++) {
+                    for (l = 0; l < fromLanguage.maxSentenceLength(); l++) {
                         alignmentDistribution[i][j][k][l] = 1.0 / (fromLanguage.maxSentenceLength() + 1);
+                    }
+                }
+            }
+        }
         while (iterationCount < maxIteration){
-            count = new HashMap<String, Map<String, Double>>();
-            total = new HashMap<String, Double>();
-            s_total = new HashMap<String, Double>();
+            count = new HashMap<>();
+            total = new HashMap<>();
+            s_total = new HashMap<>();
             count_a = new double[toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()];
             total_a = new double[toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][toLanguage.maxSentenceLength()];
             for (i = 0; i < fromLanguage.sentenceCount(); i++){
@@ -48,16 +52,19 @@ public class IBMModel2 extends IBMModel1{
                     for (k = 0; k < fromSentence.wordCount(); k++){
                         f = fromSentence.getWord(k).getName();
                         c = translationDistribution.get(f).get(t) * alignmentDistribution[toSentence.wordCount()][fromSentence.wordCount()][j][k] / s_total.get(t);
-                        if (!count.containsKey(f))
-                            count.put(f, new HashMap<String, Double>());
-                        if (!count.get(f).containsKey(t))
+                        if (!count.containsKey(f)) {
+                            count.put(f, new HashMap<>());
+                        }
+                        if (!count.get(f).containsKey(t)) {
                             count.get(f).put(t, c);
-                        else
+                        } else {
                             count.get(f).put(t, count.get(f).get(t) + c);
-                        if (!total.containsKey(f))
+                        }
+                        if (!total.containsKey(f)) {
                             total.put(f, c);
-                        else
+                        } else {
                             total.put(f, total.get(f) + c);
+                        }
                         count_a[toSentence.wordCount()][fromSentence.wordCount()][j][k] += c;
                         total_a[toSentence.wordCount()][fromSentence.wordCount()][j] += c;
                     }
@@ -70,11 +77,15 @@ public class IBMModel2 extends IBMModel1{
                     translationDistribution.get(f).put(t, count.get(f).get(t) / total.get(f));
                 }
             }
-            for (i = 0; i < toLanguage.maxSentenceLength(); i++)
-                for (j = 0; j < fromLanguage.maxSentenceLength(); j++)
-                    for (k = 0; k < toLanguage.maxSentenceLength(); k++)
-                        for (l = 0; l < fromLanguage.maxSentenceLength(); l++)
+            for (i = 0; i < toLanguage.maxSentenceLength(); i++) {
+                for (j = 0; j < fromLanguage.maxSentenceLength(); j++) {
+                    for (k = 0; k < toLanguage.maxSentenceLength(); k++) {
+                        for (l = 0; l < fromLanguage.maxSentenceLength(); l++) {
                             alignmentDistribution[i][j][k][l] = count_a[i][j][k][l] / total_a[i][j][k];
+                        }
+                    }
+                }
+            }
             iterationCount++;
         }
     }

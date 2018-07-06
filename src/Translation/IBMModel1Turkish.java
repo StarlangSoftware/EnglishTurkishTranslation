@@ -28,4 +28,8 @@ public class IBMModel1Turkish extends IBMModel {
     public void loadModel(String modelFile) {
         dictionary = new AutomaticTranslationDictionary(modelFile, new EnglishWordComparator());
     }
+
+    @Override
+    public void saveModel(String fileName) {
+    }
 }
