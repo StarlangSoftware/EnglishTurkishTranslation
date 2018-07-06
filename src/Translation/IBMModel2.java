@@ -19,13 +19,14 @@ public class IBMModel2 extends IBMModel1{
         double total_a[][][], c;
         Sentence fromSentence, toSentence;
         int i, j, k, l, iterationCount = 0;
+        int fromMaxSentenceLength = fromLanguage.maxSentenceLength(), toMaxSentenceLength = toLanguage.maxSentenceLength();
         String f, t;
-        alignmentDistribution = new double[toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()];
-        for (i = 0; i < toLanguage.maxSentenceLength(); i++) {
-            for (j = 0; j < fromLanguage.maxSentenceLength(); j++) {
-                for (k = 0; k < toLanguage.maxSentenceLength(); k++) {
-                    for (l = 0; l < fromLanguage.maxSentenceLength(); l++) {
-                        alignmentDistribution[i][j][k][l] = 1.0 / (fromLanguage.maxSentenceLength() + 1);
+        alignmentDistribution = new double[toMaxSentenceLength][fromMaxSentenceLength][toMaxSentenceLength][fromMaxSentenceLength];
+        for (i = 0; i < toMaxSentenceLength; i++) {
+            for (j = 0; j < fromMaxSentenceLength; j++) {
+                for (k = 0; k < toMaxSentenceLength; k++) {
+                    for (l = 0; l < fromMaxSentenceLength; l++) {
+                        alignmentDistribution[i][j][k][l] = 1.0 / (fromMaxSentenceLength + 1);
                     }
                 }
             }
@@ -34,8 +35,8 @@ public class IBMModel2 extends IBMModel1{
             count = new HashMap<>();
             total = new HashMap<>();
             s_total = new HashMap<>();
-            count_a = new double[toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()];
-            total_a = new double[toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][toLanguage.maxSentenceLength()];
+            count_a = new double[toMaxSentenceLength][fromMaxSentenceLength][toMaxSentenceLength][fromMaxSentenceLength];
+            total_a = new double[toMaxSentenceLength][fromMaxSentenceLength][toMaxSentenceLength];
             for (i = 0; i < fromLanguage.sentenceCount(); i++){
                 fromSentence = fromLanguage.getSentence(i);
                 toSentence = toLanguage.getSentence(i);
@@ -77,10 +78,10 @@ public class IBMModel2 extends IBMModel1{
                     translationDistribution.get(f).put(t, count.get(f).get(t) / total.get(f));
                 }
             }
-            for (i = 0; i < toLanguage.maxSentenceLength(); i++) {
-                for (j = 0; j < fromLanguage.maxSentenceLength(); j++) {
-                    for (k = 0; k < toLanguage.maxSentenceLength(); k++) {
-                        for (l = 0; l < fromLanguage.maxSentenceLength(); l++) {
+            for (i = 0; i < toMaxSentenceLength; i++) {
+                for (j = 0; j < fromMaxSentenceLength; j++) {
+                    for (k = 0; k < toMaxSentenceLength; k++) {
+                        for (l = 0; l < fromMaxSentenceLength; l++) {
                             alignmentDistribution[i][j][k][l] = count_a[i][j][k][l] / total_a[i][j][k];
                         }
                     }

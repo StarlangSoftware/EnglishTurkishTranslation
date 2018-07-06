@@ -11,7 +11,7 @@ public class IBMModel3 extends IBMModel2{
     protected Map<String, int[]> fertility;//n(phi|fromLanguage)
     protected double distortionDistribution[][][][];//d(j|i, toLanguage, fromLanguage)
     protected double p0, p1;
-    static final int MAX_FERTILITY = 5;
+    static final int MAX_FERTILITY = 10;
 
     public IBMModel3(Corpus fromLanguage, Corpus toLanguage, int maxIteration){
         super(fromLanguage, toLanguage, maxIteration);
@@ -21,17 +21,18 @@ public class IBMModel3 extends IBMModel2{
         Map<String, Double> total_f;
         double count_d[][][][];
         double total_d[][][], countP1, countP0, cTotal, c;
+        int fromMaxSentenceLength = fromLanguage.maxSentenceLength(), toMaxSentenceLength = toLanguage.maxSentenceLength();
         ArrayList<WordAlignment> A;
         Sentence fromSentence, toSentence;
         String f, t;
         int i, j, k, l, iterationCount = 0, nullCount, fertilityCount;
-        fertility = new HashMap<String, int[]>();
-        distortionDistribution = new double[toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][toLanguage.maxSentenceLength()];
-        for (i = 0; i < toLanguage.maxSentenceLength(); i++) {
-            for (j = 0; j < fromLanguage.maxSentenceLength(); j++) {
-                for (k = 0; k < fromLanguage.maxSentenceLength(); k++) {
-                    for (l = 0; l < toLanguage.maxSentenceLength(); l++) {
-                        distortionDistribution[i][j][k][l] = 1.0 / (toLanguage.maxSentenceLength() + 1);
+        fertility = new HashMap<>();
+        distortionDistribution = new double[toMaxSentenceLength][fromMaxSentenceLength][fromMaxSentenceLength][toMaxSentenceLength];
+        for (i = 0; i < toMaxSentenceLength; i++) {
+            for (j = 0; j < fromMaxSentenceLength; j++) {
+                for (k = 0; k < fromMaxSentenceLength; k++) {
+                    for (l = 0; l < toMaxSentenceLength; l++) {
+                        distortionDistribution[i][j][k][l] = 1.0 / (toMaxSentenceLength + 1);
                     }
                 }
             }
@@ -45,8 +46,8 @@ public class IBMModel3 extends IBMModel2{
             total_f = new HashMap<>();
             count_t = new HashMap<>();
             total_t = new HashMap<>();
-            count_d = new double[toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][toLanguage.maxSentenceLength()];
-            total_d = new double[toLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()][fromLanguage.maxSentenceLength()];
+            count_d = new double[toMaxSentenceLength][fromMaxSentenceLength][fromMaxSentenceLength][toMaxSentenceLength];
+            total_d = new double[toMaxSentenceLength][fromMaxSentenceLength][fromMaxSentenceLength];
             for (k = 0; k < fromLanguage.sentenceCount(); k++){
                 fromSentence = fromLanguage.getSentence(k);
                 toSentence = toLanguage.getSentence(k);
@@ -117,10 +118,10 @@ public class IBMModel3 extends IBMModel2{
                     translationDistribution.get(f).put(t, count_t.get(f).get(t) / total_t.get(f));
                 }
             }
-            for (i = 0; i < toLanguage.maxSentenceLength(); i++) {
-                for (j = 0; j < fromLanguage.maxSentenceLength(); j++) {
-                    for (k = 0; k < fromLanguage.maxSentenceLength(); k++) {
-                        for (l = 0; l < toLanguage.maxSentenceLength(); l++) {
+            for (i = 0; i < toMaxSentenceLength; i++) {
+                for (j = 0; j < fromMaxSentenceLength; j++) {
+                    for (k = 0; k < fromMaxSentenceLength; k++) {
+                        for (l = 0; l < toMaxSentenceLength; l++) {
                             distortionDistribution[i][j][k][l] = count_d[i][j][k][l] / total_d[i][j][k];
                         }
                     }
