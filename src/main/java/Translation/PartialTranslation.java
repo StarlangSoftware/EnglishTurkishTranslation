@@ -78,7 +78,7 @@ public class PartialTranslation {
         TxtWord currentRoot = null;
         ArrayList<String> tokenList = getMorphosyntacticTokenList();
         for (String token:tokenList){
-            if (!fsm.isValidTransition(token)){
+            if (!fsm.getFiniteStateMachine().isValidTransition(token)){
                 if (!currentWord.isEmpty()){
                     if (!fsm.morphologicalAnalysisExists(currentRoot, currentWord)){
                         return false;
@@ -108,7 +108,7 @@ public class PartialTranslation {
         ArrayList<String> tokenList = getMorphosyntacticTokenList();
         toSentence = new Sentence();
         for (String token:tokenList){
-            if (!fsm.isValidTransition(token)){
+            if (!fsm.getFiniteStateMachine().isValidTransition(token)){
                 if (!currentWord.isEmpty()){
                     if (fsm.morphologicalAnalysisExists(currentRoot, currentWord)){
                         toSentence.addWord(new Word(currentWord));
