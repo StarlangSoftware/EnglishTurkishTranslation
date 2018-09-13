@@ -5,11 +5,10 @@ import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
@@ -33,7 +32,8 @@ public class AutomaticTranslationDictionary extends Dictionary {
             DOMParser parser = new DOMParser();
             Document doc;
             try {
-                parser.parse(filename);
+                ClassLoader classLoader = getClass().getClassLoader();
+                parser.parse(new InputSource(classLoader.getResourceAsStream(filename)));
             } catch (SAXException e) {
                 e.printStackTrace();
             }
@@ -67,25 +67,6 @@ public class AutomaticTranslationDictionary extends Dictionary {
         }
     }
 
-    public AutomaticTranslationDictionary(final String fileName, WordComparator comparator, final JProgressBar progressBar){
-        super(comparator);
-        this.filename = fileName;
-        ReadDictionaryTask task = new ReadDictionaryTask();
-        task.addPropertyChangeListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                if ("progress".equals(evt.getPropertyName())){
-                    Runtime runtime = Runtime.getRuntime();
-                    progressBar.setString("Reading " + fileName + " %" + evt.getNewValue() + " complete. Memory Usage: " + (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024) + " MB");
-                    if ((Integer) evt.getNewValue() == 100){
-                        progressBar.setVisible(false);
-                    }
-                }
-            }
-        });
-        task.execute();
-        Collections.sort(words, comparator);
-    }
-
     public AutomaticTranslationDictionary(final String fileName, WordComparator comparator){
         super(comparator);
         this.filename = fileName;
@@ -99,6 +80,10 @@ public class AutomaticTranslationDictionary extends Dictionary {
             e.printStackTrace();
         }
         Collections.sort(words, comparator);
+    }
+
+    public AutomaticTranslationDictionary(){
+        this("translation.xml", new EnglishWordComparator());
     }
 
     public void mergeWith(Dictionary secondDictionary){
