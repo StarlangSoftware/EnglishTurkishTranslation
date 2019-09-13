@@ -13,30 +13,47 @@ import java.util.Collections;
 import java.util.Locale;
 
 public class PartialTranslation {
-    private Sentence fromSentence;
+    private Sentence sourceSentence;
     private boolean[] processed;
-    private Sentence toSentence;
+    private Sentence targetSentence;
     private double logProbability;
     private int processedCount = 0;
 
-    private PartialTranslation(){
-
+    /**
+     * Empty constructor for {@link PartialTranslation} class.
+     */
+    public PartialTranslation(){
     }
 
-    public PartialTranslation(Sentence fromSentence){
-        this.fromSentence = fromSentence;
-        toSentence = new Sentence();
-        processed = new boolean[fromSentence.wordCount()];
+    /**
+     * Constructor for {@link PartialTranslation} class. Gets the source sentence as input, sets the corresponding
+     * attribute, initializes the target sentence and processed array.
+     * @param sourceSentence Source sentence input.
+     */
+    public PartialTranslation(Sentence sourceSentence){
+        this.sourceSentence = sourceSentence;
+        targetSentence = new Sentence();
+        processed = new boolean[sourceSentence.wordCount()];
         logProbability = 0;
         processedCount = 0;
     }
 
+    /**
+     * Return current translation of the source sentence.
+     * @return Current translation of the course sentence.
+     */
     public Sentence getTranslation(){
-        return toSentence;
+        return targetSentence;
     }
 
+    /**
+     * Equality check method for {@link PartialTranslation} class. Checks if the current translation is equal to the
+     * given partial translation.
+     * @param p Second partial translation to compare.
+     * @return True if both translations are equal, false otherwise.
+     */
     public boolean equals(PartialTranslation p){
-        if (!toSentence.equals(p.toSentence))
+        if (!targetSentence.equals(p.targetSentence))
             return false;
         for (int i = 0; i < processed.length; i++)
             if (processed[i] != p.processed[i])
@@ -44,9 +61,14 @@ public class PartialTranslation {
         return true;
     }
 
+    /**
+     * Extracts all morphosyntactic tokens as a list of strings. For each word in the target sentence, the method splits
+     * the word into tokens by the separator + and space.
+     * @return All morphosyntactic tokens as a list of strings.
+     */
     private ArrayList<String> getMorphosyntacticTokenList(){
         ArrayList<String> tokenList = new ArrayList<String>();
-        for (Word word:toSentence.getWords()){
+        for (Word word: targetSentence.getWords()){
             if (!word.getName().equalsIgnoreCase("*NONE*")){
                 String[] tokens = word.getName().split("[\\s\\+]");
                 Collections.addAll(tokenList, tokens);
@@ -55,6 +77,12 @@ public class PartialTranslation {
         return tokenList;
     }
 
+    /**
+     * Adds the given token to the dictionary. Since dictionary does not contain numbers, time, fraction expressions,
+     * this method will add them to the dictionary while translation.
+     * @param dictionary Current dictionary as a {@link TxtDictionary} class.
+     * @param token Token to be added to the dictionary.
+     */
     private void updateDictionary(TxtDictionary dictionary, String token){
         if (token.contains("\\/")){
             dictionary.addFraction(token);
@@ -72,6 +100,13 @@ public class PartialTranslation {
         }
     }
 
+    /**
+     * Checks if the current generated translation sentence is a valid translation as a metamorphic expression. The
+     * translation is usually obtained by concatenating metamorphemes, and not all metamorphemes can come one after
+     * another. This method checks the possibility for an ordered list of metamorphemes.
+     * @param fsm Turkish morphological analyzer
+     * @return True, if the current translation is a valid translation; false otherwise.
+     */
     public boolean validTranslation(FsmMorphologicalAnalyzer fsm){
         TxtDictionary dictionary = fsm.getDictionary();
         String currentWord = "";
@@ -106,12 +141,12 @@ public class PartialTranslation {
         String currentWord = "";
         TxtWord currentRoot = null;
         ArrayList<String> tokenList = getMorphosyntacticTokenList();
-        toSentence = new Sentence();
+        targetSentence = new Sentence();
         for (String token:tokenList){
             if (!fsm.getFiniteStateMachine().isValidTransition(token)){
                 if (!currentWord.isEmpty()){
                     if (fsm.morphologicalAnalysisExists(currentRoot, currentWord)){
-                        toSentence.addWord(new Word(currentWord));
+                        targetSentence.addWord(new Word(currentWord));
                     } else {
                         return false;
                     }
@@ -136,7 +171,7 @@ public class PartialTranslation {
         }
         if (!currentWord.isEmpty()){
             if (fsm.morphologicalAnalysisExists(currentRoot, currentWord)){
-                toSentence.addWord(new Word(currentWord));
+                targetSentence.addWord(new Word(currentWord));
             } else {
                 return false;
             }
@@ -144,18 +179,35 @@ public class PartialTranslation {
         return true;
     }
 
-    public Sentence getFromSentence(){
-        return fromSentence;
+    /**
+     * Accessor for the sourceSentence attribute.
+     * @return Source sentence.
+     */
+    public Sentence getSourceSentence(){
+        return sourceSentence;
     }
 
-    public Sentence getToSentence(){
-        return toSentence;
+    /**
+     * Accessor for the targetSentence attribute.
+     * @return Target sentence.
+     */
+    public Sentence getTargetSentence(){
+        return targetSentence;
     }
 
+    /**
+     * Accessor for the logProbability attribute.
+     * @return Logarithm of the probability of the sentence.
+     */
     public double getLogProbability(){
         return logProbability;
     }
 
+    /**
+     * Checks if the translation is completed or not. If all tokens in the source sentence are processed, the method
+     * returns true.
+     * @return True if all tokens in the source sentence are translated, false otherwise.
+     */
     public boolean done(){
         for (boolean token:processed){
             if (!token){
@@ -165,25 +217,41 @@ public class PartialTranslation {
         return true;
     }
 
+    /**
+     * Constructs a clone of the current object.
+     * @return Clone of the current object.
+     */
     public PartialTranslation clone(){
         PartialTranslation p = new PartialTranslation();
-        p.fromSentence = fromSentence;
+        p.sourceSentence = sourceSentence;
         p.processed = processed.clone();
-        p.toSentence = toSentence.clone();
+        p.targetSentence = targetSentence.clone();
         p.logProbability = logProbability;
         p.processedCount = processedCount;
         return p;
     }
 
+    /**
+     * Translates a word at the given index to the given target word with the given probability.
+     * @param index Index of the word to be translated.
+     * @param toWord Target word, i.e. translation of the source word.
+     * @param logProbability Logarithm of the probability of the translation.
+     * @return Clone of the current object with the word translated.
+     */
     public PartialTranslation translateWord(int index, Word toWord, double logProbability){
         PartialTranslation p = this.clone();
         p.processed[index] = true;
-        p.toSentence.addWord(toWord);
+        p.targetSentence.addWord(toWord);
         p.logProbability += logProbability;
         p.processedCount = processedCount + 1;
         return p;
     }
 
+    /**
+     * Constructs an array of untranslated word indexes.
+     * @param translationType Translation type.
+     * @return An array of untranslated word indexes.
+     */
     public ArrayList<Integer> getCandidateList(TranslationType translationType){
         ArrayList candidateList = new ArrayList();
         switch (translationType){
@@ -191,7 +259,7 @@ public class PartialTranslation {
                 candidateList.add(processedCount);
                 break;
             case PHRASE_BASED:
-                for (int i = 0; i < fromSentence.wordCount(); i++)
+                for (int i = 0; i < sourceSentence.wordCount(); i++)
                     if (!processed[i])
                         candidateList.add(i);
                 break;

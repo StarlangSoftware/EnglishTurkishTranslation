@@ -10,7 +10,6 @@ import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 public class BilingualDictionary extends Dictionary {
@@ -28,9 +27,7 @@ public class BilingualDictionary extends Dictionary {
             try {
                 ClassLoader classLoader = getClass().getClassLoader();
                 parser.parse(new InputSource(classLoader.getResourceAsStream(filename)));
-            } catch (SAXException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (SAXException | IOException e) {
                 e.printStackTrace();
             }
             doc = parser.getDocument();
@@ -86,6 +83,13 @@ public class BilingualDictionary extends Dictionary {
         }
     }
 
+    /**
+     * Constructor for the {@link BilingualDictionary} class. Gets the translation file and word
+     * comparator as input; calls its super class {@link Dictionary} with comparator and reads the bilingual
+     * dictionary
+     * @param fileName Name of the file containing the bilingual dictionary
+     * @param comparator Comparator to compare words in the second language
+     */
     public BilingualDictionary(final String fileName, WordComparator comparator){
         super(comparator);
         this.filename = fileName;
@@ -93,18 +97,27 @@ public class BilingualDictionary extends Dictionary {
         task.execute();
         try {
             task.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        Collections.sort(words, comparator);
+        words.sort(comparator);
     }
 
+    /**
+     * Another default Constructor for the {@link BilingualDictionary} class. Calls the above constructor
+     * with default translation file name "english-turkish.xml"
+     */
     public BilingualDictionary(){
         this("english-turkish.xml", new EnglishWordComparator());
     }
 
+    /**
+     * Gets all translation of a source word, which is in the third person form. The method removes the "ing" morpheme
+     * from the current word to get the root form of the word and gets the translations from the bilingual dictionary
+     * for that root word.
+     * @param word Lemma form containing the "ing" morpheme.
+     * @return The set of translations of the lemma.
+     */
     public WordTranslations inThirdPersonForm(String word){
         SourceWord sourceWord;
         if (word.endsWith("s")){
@@ -116,6 +129,13 @@ public class BilingualDictionary extends Dictionary {
         return null;
     }
 
+    /**
+     * Gets all translation of a source word, which is in the plural form. The method removes the "s" or "es" morpheme
+     * from the current word to get the root form of the word and gets the translations from the bilingual dictionary
+     * for that root word.
+     * @param word Lemma form containing the "s" or "es" morpheme.
+     * @return The set of translations of the lemma.
+     */
     public WordTranslations inPluralForm(String word){
         SourceWord sourceWord;
         if (word.endsWith("es")){
@@ -133,6 +153,13 @@ public class BilingualDictionary extends Dictionary {
         return null;
     }
 
+    /**
+     * Gets all translation of a source word, which is in the past form. The method removes the "d" or "ed" morpheme
+     * from the current word to get the root form of the word and gets the translations from the bilingual dictionary
+     * for that root word.
+     * @param word Lemma form containing the "d" or "ed" morpheme.
+     * @return The set of translations of the lemma.
+     */
     public WordTranslations inPastForm(String word){
         SourceWord sourceWord;
         if (word.endsWith("ed")){
@@ -154,6 +181,13 @@ public class BilingualDictionary extends Dictionary {
         return null;
     }
 
+    /**
+     * Gets all translation of a source word, which is in the "ing" form. The method removes the "ing" morpheme
+     * from the current word to get the root form of the word and gets the translations from the bilingual dictionary
+     * for that root word.
+     * @param word Lemma form containing the "ing" morpheme.
+     * @return The set of translations of the lemma.
+     */
     public WordTranslations inIngForm(String word){
         SourceWord sourceWord;
         if (word.endsWith("ing")){

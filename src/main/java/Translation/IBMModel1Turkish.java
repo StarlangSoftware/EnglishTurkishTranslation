@@ -11,10 +11,10 @@ public class IBMModel1Turkish extends IBMModel {
     public ArrayList<PartialTranslation> translate(PartialTranslation current, int index) {
         ArrayList<PartialTranslation> translations;
         WordTranslations wordTranslations;
-        wordTranslations = (WordTranslations) dictionary.getWord(current.getFromSentence().getWord(index).getName().toLowerCase());
+        wordTranslations = (WordTranslations) dictionary.getWord(current.getSourceSentence().getWord(index).getName().toLowerCase());
         translations = new ArrayList<PartialTranslation>();
         if (wordTranslations == null){
-            translations.add(current.translateWord(index, new Word(current.getFromSentence().getWord(index).getName().toLowerCase()), 0));
+            translations.add(current.translateWord(index, new Word(current.getSourceSentence().getWord(index).getName().toLowerCase()), 0));
         } else {
             for (TargetPhrase targetPhrase : wordTranslations.getTranslations()){
                 WordTranslationCandidate wordTranslationCandidate = (WordTranslationCandidate) targetPhrase;

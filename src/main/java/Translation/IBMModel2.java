@@ -8,18 +8,25 @@ import java.util.Map;
 
 public class IBMModel2 extends IBMModel1{
 
-    protected double alignmentDistribution[][][][];//a(i|j, toLanguage, fromLanguage)
+    protected double alignmentDistribution[][][][];//a(i|j, targetCorpus, sourceCorpus)
 
-    public IBMModel2(Corpus fromLanguage, Corpus toLanguage, int maxIteration){
-        super(fromLanguage, toLanguage, maxIteration);
+    /**
+     * Constructor for the {@link IBMModel2} class. Gets the source corpus and the target corpus with the number of
+     * iterations and trains the IBMModel2 using those corpora.
+     * @param sourceCorpus Source corpus
+     * @param targetCorpus Target corpus
+     * @param maxIteration Maximum number of iterations to converge.
+     */
+    public IBMModel2(Corpus sourceCorpus, Corpus targetCorpus, int maxIteration){
+        super(sourceCorpus, targetCorpus, maxIteration);
         Map<String, Map<String, Double>> count;
         Map<String, Double> total;
         Map<String, Double> s_total;
         double count_a[][][][];
         double total_a[][][], c;
-        Sentence fromSentence, toSentence;
+        Sentence sourceSentence, targetSentence;
         int i, j, k, l, iterationCount = 0;
-        int fromMaxSentenceLength = fromLanguage.maxSentenceLength(), toMaxSentenceLength = toLanguage.maxSentenceLength();
+        int fromMaxSentenceLength = sourceCorpus.maxSentenceLength(), toMaxSentenceLength = targetCorpus.maxSentenceLength();
         String f, t;
         alignmentDistribution = new double[toMaxSentenceLength][fromMaxSentenceLength][toMaxSentenceLength][fromMaxSentenceLength];
         for (i = 0; i < toMaxSentenceLength; i++) {
@@ -37,22 +44,22 @@ public class IBMModel2 extends IBMModel1{
             s_total = new HashMap<>();
             count_a = new double[toMaxSentenceLength][fromMaxSentenceLength][toMaxSentenceLength][fromMaxSentenceLength];
             total_a = new double[toMaxSentenceLength][fromMaxSentenceLength][toMaxSentenceLength];
-            for (i = 0; i < fromLanguage.sentenceCount(); i++){
-                fromSentence = fromLanguage.getSentence(i);
-                toSentence = toLanguage.getSentence(i);
-                for (j = 0; j < toSentence.wordCount(); j++){
-                    t = toSentence.getWord(j).getName();
+            for (i = 0; i < sourceCorpus.sentenceCount(); i++){
+                sourceSentence = sourceCorpus.getSentence(i);
+                targetSentence = targetCorpus.getSentence(i);
+                for (j = 0; j < targetSentence.wordCount(); j++){
+                    t = targetSentence.getWord(j).getName();
                     s_total.put(t, 0.0);
-                    for (k = 0; k < fromSentence.wordCount(); k++){
-                        f = fromSentence.getWord(k).getName();
-                        s_total.put(t, s_total.get(t) + translationDistribution.get(f).get(t) * alignmentDistribution[toSentence.wordCount()][fromSentence.wordCount()][j][k]);
+                    for (k = 0; k < sourceSentence.wordCount(); k++){
+                        f = sourceSentence.getWord(k).getName();
+                        s_total.put(t, s_total.get(t) + translationDistribution.get(f).get(t) * alignmentDistribution[targetSentence.wordCount()][sourceSentence.wordCount()][j][k]);
                     }
                 }
-                for (j = 0; j < toSentence.wordCount(); j++){
-                    t = toSentence.getWord(j).getName();
-                    for (k = 0; k < fromSentence.wordCount(); k++){
-                        f = fromSentence.getWord(k).getName();
-                        c = translationDistribution.get(f).get(t) * alignmentDistribution[toSentence.wordCount()][fromSentence.wordCount()][j][k] / s_total.get(t);
+                for (j = 0; j < targetSentence.wordCount(); j++){
+                    t = targetSentence.getWord(j).getName();
+                    for (k = 0; k < sourceSentence.wordCount(); k++){
+                        f = sourceSentence.getWord(k).getName();
+                        c = translationDistribution.get(f).get(t) * alignmentDistribution[targetSentence.wordCount()][sourceSentence.wordCount()][j][k] / s_total.get(t);
                         if (!count.containsKey(f)) {
                             count.put(f, new HashMap<>());
                         }
@@ -66,8 +73,8 @@ public class IBMModel2 extends IBMModel1{
                         } else {
                             total.put(f, total.get(f) + c);
                         }
-                        count_a[toSentence.wordCount()][fromSentence.wordCount()][j][k] += c;
-                        total_a[toSentence.wordCount()][fromSentence.wordCount()][j] += c;
+                        count_a[targetSentence.wordCount()][sourceSentence.wordCount()][j][k] += c;
+                        total_a[targetSentence.wordCount()][sourceSentence.wordCount()][j] += c;
                     }
                 }
             }

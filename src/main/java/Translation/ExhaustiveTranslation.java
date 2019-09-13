@@ -10,12 +10,25 @@ public class ExhaustiveTranslation {
     private FsmMorphologicalAnalyzer fsm;
     private int maxStackSize;
 
+    /**
+     * Constructor for the {@link ExhaustiveTranslation} class. Gets the translationType, Turkish morphological
+     * analyzer and maximum stack size as input, and sets the corresponding attributes.
+     * @param translationType Type of the translation.
+     * @param fsm Turkish morphological analyzer
+     * @param maxStackSize Maximum stack size allowed
+     */
     public ExhaustiveTranslation(TranslationType translationType, FsmMorphologicalAnalyzer fsm, int maxStackSize){
         this.translationType = translationType;
         this.fsm = fsm;
         this.maxStackSize = maxStackSize;
     }
 
+    /**
+     * The method extracts the best translation according to the given IBMModel for the given sentence.
+     * @param model IBMModel used for translation.
+     * @param fromSentence Sentence to be translated.
+     * @return Output translation.
+     */
     public PartialTranslation bestTranslation(IBMModel model, Sentence fromSentence){
         PartialTranslation best = null, current = new PartialTranslation(fromSentence);
         ArrayList<PartialTranslation> candidates;
@@ -50,6 +63,12 @@ public class ExhaustiveTranslation {
             return null;
     }
 
+    /**
+     * The method extracts the all best translations according to the given IBMModel for the given sentence.
+     * @param model IBMModel used for translation.
+     * @param fromSentence Sentence to be translated.
+     * @return Output translation set.
+     */
     public ArrayList<PartialTranslation> bestTranslationList(IBMModel model, Sentence fromSentence){
         ArrayList<PartialTranslation> result = new ArrayList<PartialTranslation>();
         PartialTranslation current = new PartialTranslation(fromSentence);

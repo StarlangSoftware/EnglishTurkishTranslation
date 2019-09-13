@@ -51,7 +51,7 @@ public class SentenceAlignment {
         double s2 = 6.8;
         if (len1 == 0 && len2 == 0)
             return 0;
-        mean = (len1 + len2) / 2;
+        mean = (len1 + len2) / 2.0;
         z = (len1 - len2) / Math.sqrt(s2 * mean);
         if (z < 0)
             z = -z;
@@ -87,10 +87,10 @@ public class SentenceAlignment {
     }
 
     public SentenceAlignmentType[] galeChurch(){
-        SentenceAlignmentType alignment[];
+        SentenceAlignmentType[] alignment;
         int i, j, k, minCost, minIndex, n, moveCount;
-        int costs[] = new int[6];
-        Cell dist[][] = new Cell[firstParagraph.sentenceCount() + 1][secondParagraph.sentenceCount() + 1];
+        int[] costs = new int[6];
+        Cell[][] dist = new Cell[firstParagraph.sentenceCount() + 1][secondParagraph.sentenceCount() + 1];
         for (j = 0; j <= secondParagraph.sentenceCount(); j++)
             for (i = 0; i <= firstParagraph.sentenceCount(); i++){
                 if (i > 0 && j > 0)

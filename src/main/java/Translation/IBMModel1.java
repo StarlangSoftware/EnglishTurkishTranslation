@@ -9,45 +9,52 @@ import java.util.*;
 import java.util.Map.*;
 
 public class IBMModel1 extends IBMModel{
-    protected Corpus fromLanguage;
-    protected Corpus toLanguage;
-    protected Map<String, Map<String, Double>> translationDistribution;//t(toLanguage|fromLanguage)
+    protected Corpus sourceCorpus;
+    protected Corpus targetCorpus;
+    protected Map<String, Map<String, Double>> translationDistribution;//t(targetCorpus|sourceCorpus)
 
-    public IBMModel1(Corpus fromLanguage, Corpus toLanguage, int maxIteration){
-        this.fromLanguage = fromLanguage;
-        this.toLanguage = toLanguage;
+    /**
+     * Constructor for the {@link IBMModel1} class. Gets the source corpus and the target corpus with the number of
+     * iterations and trains the IBMModel1 using those corpora.
+     * @param sourceCorpus Source corpus
+     * @param targetCorpus Target corpus
+     * @param maxIteration Maximum number of iterations to converge.
+     */
+    public IBMModel1(Corpus sourceCorpus, Corpus targetCorpus, int maxIteration){
+        this.sourceCorpus = sourceCorpus;
+        this.targetCorpus = targetCorpus;
         Map<String, Map<String, Double>> count;
         Map<String, Double> total;
         Map<String, Double> s_total;
         String f, t;
         int i, j, k, iterationCount = 0;
-        Sentence fromSentence, toSentence;
+        Sentence sourceSentence, targetSentence;
         translationDistribution = new HashMap<>();
         while (iterationCount < maxIteration){
             count = new HashMap<>();
             total = new HashMap<>();
             s_total = new HashMap<>();
-            for (i = 0; i < fromLanguage.sentenceCount(); i++){
-                fromSentence = fromLanguage.getSentence(i);
-                toSentence = toLanguage.getSentence(i);
-                for (j = 0; j < toSentence.wordCount(); j++){
-                    t = toSentence.getWord(j).getName();
+            for (i = 0; i < sourceCorpus.sentenceCount(); i++){
+                sourceSentence = sourceCorpus.getSentence(i);
+                targetSentence = targetCorpus.getSentence(i);
+                for (j = 0; j < targetSentence.wordCount(); j++){
+                    t = targetSentence.getWord(j).getName();
                     s_total.put(t, 0.0);
-                    for (k = 0; k < fromSentence.wordCount(); k++){
-                        f = fromSentence.getWord(k).getName();
+                    for (k = 0; k < sourceSentence.wordCount(); k++){
+                        f = sourceSentence.getWord(k).getName();
                         if (!translationDistribution.containsKey(f)){
                             translationDistribution.put(f, new HashMap<>());
                         }
                         if (!translationDistribution.get(f).containsKey(t)){
-                            translationDistribution.get(f).put(t, 1.0 / toLanguage.wordCount());
+                            translationDistribution.get(f).put(t, 1.0 / targetCorpus.wordCount());
                         }
                         s_total.put(t, s_total.get(t) + translationDistribution.get(f).get(t));
                     }
                 }
-                for (j = 0; j < toSentence.wordCount(); j++){
-                    t = toSentence.getWord(j).getName();
-                    for (k = 0; k < fromSentence.wordCount(); k++){
-                        f = fromSentence.getWord(k).getName();
+                for (j = 0; j < targetSentence.wordCount(); j++){
+                    t = targetSentence.getWord(j).getName();
+                    for (k = 0; k < sourceSentence.wordCount(); k++){
+                        f = sourceSentence.getWord(k).getName();
                         if (!count.containsKey(f)){
                             count.put(f, new HashMap<>());
                         }
@@ -85,7 +92,7 @@ public class IBMModel1 extends IBMModel{
             for (String fromWord : translationDistribution.keySet()){
                 Set<Entry<String, Double>> set = translationDistribution.get(fromWord).entrySet();
                 List<Entry<String, Double>> list = new ArrayList<>(set);
-                Collections.sort(list, (o1, o2) -> (o2.getValue()).compareTo(o1.getValue()));
+                list.sort((o1, o2) -> (o2.getValue()).compareTo(o1.getValue()));
                 if (list.size() >= 10){
                     output.println(fromWord + "\t10");
                     for (int i = 0; i < 10; i++){

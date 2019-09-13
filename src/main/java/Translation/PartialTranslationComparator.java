@@ -4,16 +4,16 @@ import java.util.Comparator;
 
 public class PartialTranslationComparator implements Comparator<PartialTranslation>{
 
-        public int compare(PartialTranslation partialA, PartialTranslation partialB){
-            if (partialB.getLogProbability() < partialA.getLogProbability()){
-                return -1;
-            } else {
-                if (partialB.getLogProbability() > partialA.getLogProbability()){
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        }
+    /**
+     * Comparator interface for two {@link PartialTranslation}s.
+     * @param partialA First {@link PartialTranslation} to compare.
+     * @param partialB Second {@link PartialTranslation} to compare.
+     * @return a. -1 if the first probability is less than the second probability
+     * b. 1 if the second probability is less than the first probability
+     * c. 0 otherwise.
+     */
+    public int compare(PartialTranslation partialA, PartialTranslation partialB){
+        return Double.compare(partialB.getLogProbability(), partialA.getLogProbability());
+    }
 
 }

@@ -10,11 +10,16 @@ import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import java.io.*;
-import java.util.Collections;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 
 public class AutomaticTranslationDictionary extends Dictionary {
 
+    /**
+     * Constructor for the {@link AutomaticTranslationDictionary} class. Gets word comparator as input and calls its
+     * super class {@link Dictionary} with it.
+     * @param comparator Comparator to compare words in the second language
+     */
     public AutomaticTranslationDictionary(WordComparator comparator){
         super(comparator);
     }
@@ -67,6 +72,13 @@ public class AutomaticTranslationDictionary extends Dictionary {
         }
     }
 
+    /**
+     * Another Constructor for the {@link AutomaticTranslationDictionary} class. Gets the translation file and word
+     * comparator as input; calls its super class {@link Dictionary} with comparator and reads the translation
+     * dictionary
+     * @param fileName Name of the file containing the translation dictionary
+     * @param comparator Comparator to compare words in the second language
+     */
     public AutomaticTranslationDictionary(final String fileName, WordComparator comparator){
         super(comparator);
         this.filename = fileName;
@@ -74,18 +86,28 @@ public class AutomaticTranslationDictionary extends Dictionary {
         task.execute();
         try {
             task.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        Collections.sort(words, comparator);
+        words.sort(comparator);
     }
 
+    /**
+     * Another default Constructor for the {@link AutomaticTranslationDictionary} class. Calls the above constructor
+     * with default translation file name "translation.xml"
+     */
     public AutomaticTranslationDictionary(){
         this("translation.xml", new EnglishWordComparator());
     }
 
+    /**
+     * The method merges the current translation dictionary with the given second translation dictionary. Basically
+     * 1. If a word in the second dictionary does not exist in the current dictionary, the translations of that word
+     * are all imported.
+     * 2. If a word in the second dictionary exists in the current dictionary, the translations are checked; if the
+     * translations are same; the counts are added, otherwise the counts are directly imported.
+     * @param secondDictionary Second translation dictionary.
+     */
     public void mergeWith(Dictionary secondDictionary){
         int i, secondIndex;
         WordTranslations word, word2;
@@ -101,11 +123,16 @@ public class AutomaticTranslationDictionary extends Dictionary {
             word = (WordTranslations) secondDictionary.getWord(i);
             if (getWord(word.getName()) == null){
                 words.add(word);
-                Collections.sort(words, comparator);
+                words.sort(comparator);
             }
         }
     }
 
+    /**
+     * Adds a new word with the given translation to the translation dictionary.
+     * @param word The word to be translated.
+     * @param translation The translation of the word.
+     */
     public void addWord(Word word, Word translation){
         WordTranslations WordTranslations;
         if (getWord(word.getName()) != null){
@@ -113,16 +140,20 @@ public class AutomaticTranslationDictionary extends Dictionary {
         } else {
             WordTranslations = new WordTranslations(word.getName());
             words.add(WordTranslations);
-            Collections.sort(words, comparator);
+            words.sort(comparator);
         }
         WordTranslations.addTranslation(translation);
     }
 
+    /**
+     * Saves the translation dictionary as an xml file.
+     * @param outputFileName Name of the xml output file.
+     */
     public void saveAsXml(String outputFileName){
         int i;
         BufferedWriter outfile;
         try {
-            outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFileName), "UTF-8"));
+            outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFileName), StandardCharsets.UTF_8));
             outfile.write("<lexicon>\n");
             for (i = 0; i < words.size(); i++){
                 outfile.write(((WordTranslations) words.get(i)).toXml());
