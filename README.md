@@ -73,19 +73,16 @@ Use below line to generate jar file:
 
      mvn install
 
-
-
-------------------------------------------------
-
-Translation
-============
-+ [Maven Usage](#maven-usage)
-
-
-### Maven Usage
+## Maven Usage
 
 	<dependency>
   	<groupId>NlpToolkit</groupId>
   	<artifactId>Translation</artifactId>
   	<version>1.0.1</version>
 	</dependency>
+
+------------------------------------------------
+
+Detailed Description
+============
+
