@@ -1,4 +1,3 @@
-# Translation
 For Developers
 ============
 
@@ -36,7 +35,7 @@ Use Git for cloning the code to your local or below line for Ubuntu:
 
 A directory called Translation will be created. Or you can use below link for exploring the code:
 
-	git clone https://github.com/olcaytaner/Translation.git
+	git clone https://github.com/starlangsoftware/EnglishTurkishTranslation.git
 
 ## Open project with IntelliJ IDEA
 
