@@ -1,7 +1,6 @@
 package Translation;
 
 import Dictionary.*;
-import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -9,6 +8,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
@@ -34,15 +36,20 @@ public class AutomaticTranslationDictionary extends Dictionary {
             String wordName, translation;
             int count, parsedCount, totalCount;
             Node wordNode, rootNode, translationNode;
-            DOMParser parser = new DOMParser();
-            Document doc;
+            DocumentBuilder builder = null;
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             try {
-                ClassLoader classLoader = getClass().getClassLoader();
-                parser.parse(new InputSource(classLoader.getResourceAsStream(filename)));
-            } catch (SAXException e) {
+                builder = factory.newDocumentBuilder();
+            } catch (ParserConfigurationException e) {
                 e.printStackTrace();
             }
-            doc = parser.getDocument();
+            Document doc = null;
+            try {
+                ClassLoader classLoader = getClass().getClassLoader();
+                doc = builder.parse(new InputSource(classLoader.getResourceAsStream(filename)));
+            } catch (SAXException | IOException e) {
+                e.printStackTrace();
+            }
             rootNode = doc.getFirstChild();
             wordNode = rootNode.getFirstChild();
             parsedCount = 0;

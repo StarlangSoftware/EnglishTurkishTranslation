@@ -1,7 +1,6 @@
 package Translation;
 
 import Dictionary.*;
-import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -9,6 +8,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
@@ -20,17 +22,22 @@ public class BilingualDictionary extends Dictionary {
             NamedNodeMap attributes;
             String wordName, lexicalClass, meaningClass;
             Node wordNode, rootNode, lexicalNode, translationNode;
-            DOMParser parser = new DOMParser();
+            DocumentBuilder builder = null;
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            try {
+                builder = factory.newDocumentBuilder();
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+            }
+            Document doc = null;
             TargetPhrase targetPhrase;
-            Document doc;
             int parsedCount, totalCount;
             try {
                 ClassLoader classLoader = getClass().getClassLoader();
-                parser.parse(new InputSource(classLoader.getResourceAsStream(filename)));
+                doc = builder.parse(new InputSource(classLoader.getResourceAsStream(filename)));
             } catch (SAXException | IOException e) {
                 e.printStackTrace();
             }
-            doc = parser.getDocument();
             rootNode = doc.getFirstChild();
             wordNode = rootNode.getFirstChild();
             parsedCount = 0;
