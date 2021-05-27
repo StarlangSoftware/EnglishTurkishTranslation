@@ -34,7 +34,7 @@ public class BilingualDictionary extends Dictionary {
             int parsedCount, totalCount;
             try {
                 ClassLoader classLoader = getClass().getClassLoader();
-                doc = builder.parse(new InputSource(classLoader.getResourceAsStream(filename)));
+                doc = builder.parse(new InputSource(classLoader.getResourceAsStream(fileName)));
             } catch (SAXException | IOException e) {
                 e.printStackTrace();
             }
@@ -99,7 +99,7 @@ public class BilingualDictionary extends Dictionary {
      */
     public BilingualDictionary(final String fileName, WordComparator comparator){
         super(comparator);
-        this.filename = fileName;
+        this.fileName = fileName;
         ReadDictionaryTask task = new ReadDictionaryTask();
         task.execute();
         try {

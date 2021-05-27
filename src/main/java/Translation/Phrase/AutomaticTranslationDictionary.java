@@ -60,7 +60,7 @@ public class AutomaticTranslationDictionary extends Dictionary {
             Document doc = null;
             try {
                 ClassLoader classLoader = getClass().getClassLoader();
-                doc = builder.parse(new InputSource(classLoader.getResourceAsStream(filename)));
+                doc = builder.parse(new InputSource(classLoader.getResourceAsStream(fileName)));
             } catch (SAXException | IOException e) {
                 e.printStackTrace();
             }
@@ -102,7 +102,7 @@ public class AutomaticTranslationDictionary extends Dictionary {
      */
     public AutomaticTranslationDictionary(final String fileName, WordComparator comparator){
         super(comparator);
-        this.filename = fileName;
+        this.fileName = fileName;
         ReadDictionaryTask task = new ReadDictionaryTask();
         task.execute();
         try {
