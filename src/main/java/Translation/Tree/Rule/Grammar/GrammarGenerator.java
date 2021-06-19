@@ -11,10 +11,7 @@ import java.util.*;
 
 public class GrammarGenerator {
 
-    public GrammarGenerator() {
-    }
-
-    private int contains(ParseNode turkish, ParseNode english, HashMap<String, String> turkishEnglishMap) {
+    private static int contains(ParseNode turkish, ParseNode english, HashMap<String, String> turkishEnglishMap) {
         ArrayList<ParseNodeDrawable> turkishLeaves = new NodeDrawableCollector((ParseNodeDrawable) turkish, new IsTurkishLeafNode()).collect();
         ArrayList<ParseNodeDrawable> englishLeaves = new NodeDrawableCollector((ParseNodeDrawable) english, new IsEnglishLeafNode()).collect();
         HashMap<ParseNodeDrawable, ParseNodeDrawable> removedMap = new HashMap<>();
@@ -39,7 +36,7 @@ public class GrammarGenerator {
         return 3;
     }
 
-    private int findIndex(ArrayList<ParseNode> language, Set<ParseNode> set, int currentIndex) {
+    private static int findIndex(ArrayList<ParseNode> language, Set<ParseNode> set, int currentIndex) {
         int index = 0;
         for (int i = 0; i < currentIndex; i++) {
             if (set.contains(language.get(i))) {
@@ -49,7 +46,7 @@ public class GrammarGenerator {
         return index;
     }
 
-    private ArrayList<ParseNode> createList(ParseNode parent, Set<ParseNode> used) {
+    private static ArrayList<ParseNode> createList(ParseNode parent, Set<ParseNode> used) {
         ArrayList<ParseNode> list = new ArrayList<>();
         for (int i = 0; i < parent.numberOfChildren(); i++) {
             ParseNode child = parent.getChild(i);
@@ -60,7 +57,7 @@ public class GrammarGenerator {
         return list;
     }
 
-    private ArrayList<ParseNode> createList(ArrayList<ParseNode> language, Set<ParseNode> used) {
+    private static ArrayList<ParseNode> createList(ArrayList<ParseNode> language, Set<ParseNode> used) {
         ArrayList<ParseNode> list = new ArrayList<>();
         for (ParseNode child : language) {
             if (!used.contains(child)) {
@@ -70,7 +67,7 @@ public class GrammarGenerator {
         return list;
     }
 
-    private boolean specialState(ParseNode current, HashMap<String, String> turkishEnglishMap) {
+    private static boolean specialState(ParseNode current, HashMap<String, String> turkishEnglishMap) {
         if (current.numberOfChildren() == 1) {
             ParseNode child = current;
             while (!child.isLeaf()) {
@@ -81,7 +78,7 @@ public class GrammarGenerator {
         return false;
     }
 
-    private ParseNode addForSpecialState(ArrayList<ParseNode> english, int i) {
+    private static ParseNode addForSpecialState(ArrayList<ParseNode> english, int i) {
         ParseNode current = english.get(i);
         ParseNode child = new ParseNode(new Symbol(current.getData().getName()));
         ParseNode currentChild = current;
@@ -92,7 +89,7 @@ public class GrammarGenerator {
         return child;
     }
 
-    private ParseNode addChildToParseNode(ArrayList<ParseNode> language, ParseNode grammarNode, HashMap<ParseNode, Integer> nodeMap, int index, SynchronousGrammar<String> grammar, int command) {
+    private static ParseNode addChildToParseNode(ArrayList<ParseNode> language, ParseNode grammarNode, HashMap<ParseNode, Integer> nodeMap, int index, SynchronousGrammar<String> grammar, int command) {
         if (grammarNode == null) {
             if (command == 0) {
                 return grammar.getEnglishList(nodeMap.get(language.get(index)));
@@ -114,7 +111,7 @@ public class GrammarGenerator {
         return grammarNode.getChild(nodeMap.get(language.get(index)));
     }
 
-    private void fillGrammarsForNotMatched(SynchronousGrammar<String> grammar, HashMap<ParseNode, Integer> nodeMap, ArrayList<ParseNode> turkish, ArrayList<ParseNode> english, ParseNode grammarTurkish, ParseNode grammarEnglish, HashMap<String, String> turkishEnglishMap) {
+    private static void fillGrammarsForNotMatched(SynchronousGrammar<String> grammar, HashMap<ParseNode, Integer> nodeMap, ArrayList<ParseNode> turkish, ArrayList<ParseNode> english, ParseNode grammarTurkish, ParseNode grammarEnglish, HashMap<String, String> turkishEnglishMap) {
         for (int i = 0; i < english.size(); i++) {
             if (!nodeMap.containsKey(english.get(i)) && specialState(english.get(i), turkishEnglishMap)) {
                 ParseNode child = addForSpecialState(english, i);
@@ -146,7 +143,7 @@ public class GrammarGenerator {
         }
     }
 
-    private boolean suitable(ParseNode turkish, ParseNode english, HashMap<String, String> turkishEnglishMap) {
+    private static boolean suitable(ParseNode turkish, ParseNode english, HashMap<String, String> turkishEnglishMap) {
         int count = 0;
         ArrayList<ParseNodeDrawable> turkishLeaves = new NodeDrawableCollector((ParseNodeDrawable) turkish, new IsTurkishLeafNode()).collect();
         ArrayList<ParseNodeDrawable> englishLeaves = new NodeDrawableCollector((ParseNodeDrawable) english, new IsEnglishLeafNode()).collect();
@@ -166,7 +163,7 @@ public class GrammarGenerator {
         return count == englishLeaves.size();
     }
 
-    private void addChildToGrammar(HashMap<ParseNode, Integer> nodeMap, SynchronousGrammar<String> grammar, ArrayList<ParseNode> language, int i, int command) {
+    private static void addChildToGrammar(HashMap<ParseNode, Integer> nodeMap, SynchronousGrammar<String> grammar, ArrayList<ParseNode> language, int i, int command) {
         ParseNode languageNode = language.get(i);
         if (!nodeMap.containsKey(languageNode)) {
             ParseNode currentLanguage = new ParseNode(new Symbol(languageNode.getData().getName()));
@@ -180,7 +177,7 @@ public class GrammarGenerator {
         }
     }
 
-    private void fillGrammarsForMatched(ArrayList<ParseNode> turkish, ArrayList<ParseNode> english, ArrayList<SynchronousGrammar<String>> grammars, HashMap<String, String> turkishEnglishMap) {
+    private static void fillGrammarsForMatched(ArrayList<ParseNode> turkish, ArrayList<ParseNode> english, ArrayList<SynchronousGrammar<String>> grammars, HashMap<String, String> turkishEnglishMap) {
         HashSet<ParseNode> used = new HashSet<>();
         HashMap<ParseNode, Integer> nodeMap = new HashMap<>();
         SynchronousGrammar<String> grammar = new SynchronousGrammar<>(turkish.get(0).getParent().getData().getName(), english.get(0).getParent().getData().getName());
@@ -201,7 +198,11 @@ public class GrammarGenerator {
                     if (containing == 0 || (containing == 2 && suitable(turkishNode, englishNode, turkishEnglishMap))) {
                         used.add(turkishNode);
                         used.add(englishNode);
-                        grammar.addTurkishList(findIndex(turkish, used, j), new ParseNode(new Symbol(turkishNode.getData().getName())));
+                        if (turkishNode.isLeaf()) {
+                            grammar.addTurkishList(findIndex(turkish, used, j), new ParseNode(new Symbol(((ParseNodeDrawable)turkishNode).getLayerData())));
+                        } else {
+                            grammar.addTurkishList(findIndex(turkish, used, j), new ParseNode(new Symbol(turkishNode.getData().getName())));
+                        }
                         grammar.addEnglishList(findIndex(english, used, i), new ParseNode(new Symbol(englishNode.getData().getName())));
                         grammar.put(turkishNode, englishNode);
                         ArrayList<ParseNode> turkishList = createList(turkishNode, used);
@@ -228,7 +229,7 @@ public class GrammarGenerator {
         grammars.add(grammar);
     }
 
-    private HashMap<String, String> generateTurkishEnglishMap(ParseNode root) {
+    private static HashMap<String, String> generateTurkishEnglishMap(ParseNode root) {
         HashMap<String, String> turkishEnglishMap = new HashMap<>();
         ArrayList<ParseNodeDrawable> list = new NodeDrawableCollector((ParseNodeDrawable) root, new IsTurkishLeafNode()).collect();
         for (ParseNodeDrawable parseNodeDrawable : list) {
@@ -237,7 +238,7 @@ public class GrammarGenerator {
         return turkishEnglishMap;
     }
 
-    public ArrayList<SynchronousGrammar<String>> generate(ParseNode turkish, ParseNode english) {
+    public static ArrayList<SynchronousGrammar<String>> generate(ParseNode turkish, ParseNode english) {
         HashMap<String, String> turkishEnglishMap = generateTurkishEnglishMap(turkish);
         ArrayList<SynchronousGrammar<String>> grammars = new ArrayList<>();
         ArrayList<ParseNode> turkishChildren = new ArrayList<>();
