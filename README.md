@@ -77,7 +77,7 @@ Use below line to generate jar file:
         <dependency>
             <groupId>io.github.starlangsoftware</groupId>
             <artifactId>Translation</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.4</version>
         </dependency>
 
 ## Cite
