@@ -198,13 +198,16 @@ public class GrammarGenerator {
                     if (containing == 0 || (containing == 2 && suitable(turkishNode, englishNode, turkishEnglishMap))) {
                         used.add(turkishNode);
                         used.add(englishNode);
+                        ParseNode currentTurkish, currentEnglish;
                         if (turkishNode.isLeaf()) {
-                            grammar.addTurkishList(findIndex(turkish, used, j), new ParseNode(new Symbol(((ParseNodeDrawable)turkishNode).getLayerData())));
+                            currentTurkish = new ParseNode(new Symbol(((ParseNodeDrawable)turkishNode).getLayerData()));
                         } else {
-                            grammar.addTurkishList(findIndex(turkish, used, j), new ParseNode(new Symbol(turkishNode.getData().getName())));
+                            currentTurkish = new ParseNode(new Symbol(turkishNode.getData().getName()));
                         }
-                        grammar.addEnglishList(findIndex(english, used, i), new ParseNode(new Symbol(englishNode.getData().getName())));
-                        grammar.put(turkishNode, englishNode);
+                        grammar.addTurkishList(findIndex(turkish, used, j), currentTurkish);
+                        currentEnglish = new ParseNode(new Symbol(englishNode.getData().getName()));
+                        grammar.addEnglishList(findIndex(english, used, i), currentEnglish);
+                        grammar.put(currentTurkish, currentEnglish);
                         ArrayList<ParseNode> turkishList = createList(turkishNode, used);
                         ArrayList<ParseNode> englishList = createList(englishNode, used);
                         if (!turkishList.isEmpty() && !englishList.isEmpty()) {
