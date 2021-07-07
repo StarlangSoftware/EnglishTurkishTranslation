@@ -183,4 +183,18 @@ public class SynchronousGrammar<Symbol> {
     public String toString() {
         return turkish.toString() + "/" + english.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof SynchronousGrammar)) {
+            return false;
+        }
+        SynchronousGrammar<Symbol> grammar = (SynchronousGrammar<Symbol>) obj;
+        return this.toString().equals(grammar.toString()) && this.turkishList.toString().equals(grammar.turkishList.toString()) && this.englishList.toString().equals(grammar.englishList.toString()) && this.parseNodeDrawableMap.toString().equals(grammar.parseNodeDrawableMap.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.turkish.toString().hashCode() ^ this.english.toString().hashCode() ^ this.turkishList.toString().hashCode() ^ this.englishList.toString().hashCode() ^ this.parseNodeDrawableMap.toString().hashCode();
+    }
 }
