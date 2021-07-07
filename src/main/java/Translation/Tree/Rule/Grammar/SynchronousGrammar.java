@@ -122,8 +122,16 @@ public class SynchronousGrammar<Symbol> {
         parseNodeDrawableMap.put(first, second);
     }
 
+    private String changeData(String data) {
+        int index = data.indexOf("{turkish=");
+        if (index != -1) {
+            return data.substring(index + 9, data.indexOf("}", index));
+        }
+        return data;
+    }
+
     private void generate(HashMap<SimpleEntry<String, Integer>, ArrayList<SimpleEntry<String, Integer>>> map, ParseNode root) {
-        SimpleEntry<String, Integer> entry = new SimpleEntry<>(root.getData().getName(), root.hashCode());
+        SimpleEntry<String, Integer> entry = new SimpleEntry<>(changeData(root.getData().getName()), root.hashCode());
         map.put(entry, new ArrayList<>());
         for (int i = 0; i < root.numberOfChildren(); i++) {
             ParseNode child = root.getChild(i);
@@ -145,7 +153,7 @@ public class SynchronousGrammar<Symbol> {
         writer.newLine();
         for (ParseNode parseNode : list) {
             HashMap<SimpleEntry<String, Integer>, ArrayList<SimpleEntry<String, Integer>>> map = generateMap(parseNode);
-            writer.write(parseNode.getData().getName() + " " + parseNode.hashCode() + " " + map.size());
+            writer.write(changeData(parseNode.getData().getName()) + " " + parseNode.hashCode() + " " + map.size());
             writer.newLine();
             for (SimpleEntry<String, Integer> key : map.keySet()) {
                 writer.write(key + " ");
