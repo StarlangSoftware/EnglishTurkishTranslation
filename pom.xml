@@ -6,7 +6,7 @@
 
     <groupId>io.github.starlangsoftware</groupId>
     <artifactId>Translation</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <packaging>jar</packaging>
 
     <name>NlpToolkit.Translation</name>
@@ -48,8 +48,8 @@
     <dependencies>
         <dependency>
             <groupId>io.github.starlangsoftware</groupId>
-            <artifactId>AnnotatedTree</artifactId>
-            <version>1.0.20</version>
+            <artifactId>SyntacticParser</artifactId>
+            <version>1.0.4</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.parsers</groupId>

@@ -121,7 +121,6 @@ public class BleuMeasure {
      * @param candidateFile Current translation, one line per sentence.
      * @param debugMode If yes, the Bleu measure is also calculated per sentence and displayed.
      * @return Calculated Bleu score.
-     * @throws IOException
      */
     public double execute(String referenceFile, String candidateFile, boolean debugMode) throws IOException {
         boolean EOF = false;
