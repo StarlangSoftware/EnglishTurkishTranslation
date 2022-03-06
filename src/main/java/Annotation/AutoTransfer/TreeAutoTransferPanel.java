@@ -18,6 +18,7 @@ import Translation.Tree.Rule.AutoTransfer.TurkishAutoTransfer;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -172,5 +173,24 @@ public class TreeAutoTransferPanel extends TreeStructureEditorPanel {
         }
     }
 
+    protected int getStringSize(ParseNodeDrawable parseNode, Graphics g) {
+        if (parseNode.numberOfChildren() == 0) {
+            return g.getFontMetrics().stringWidth(parseNode.getLayerData(ViewLayerType.TURKISH_WORD));
+        } else {
+            return g.getFontMetrics().stringWidth(parseNode.getData().getName());
+        }
+    }
+
+    protected void drawString(ParseNodeDrawable parseNode, Graphics g, int x, int y){
+        if (parseNode.numberOfChildren() == 0){
+            g.drawString(parseNode.getLayerData(ViewLayerType.TURKISH_WORD), x, y);
+        } else {
+            g.drawString(parseNode.getData().getName(), x, y);
+        }
+    }
+
+    protected void setArea(ParseNodeDrawable parseNode, int x, int y, int stringSize){
+        parseNode.setArea(x - 5, y - 15, stringSize + 10, 20);
+    }
 
 }

@@ -10,6 +10,7 @@ import DataCollector.ParseTree.TreeStructureEditorPanel;
 import Translation.Phrase.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class TreeTranslatorPanel extends TreeStructureEditorPanel {
@@ -188,6 +189,26 @@ public class TreeTranslatorPanel extends TreeStructureEditorPanel {
                 this.setFocusable(true);
             }
         }
+    }
+
+    protected int getStringSize(ParseNodeDrawable parseNode, Graphics g) {
+        if (parseNode.numberOfChildren() == 0) {
+            return g.getFontMetrics().stringWidth(parseNode.getLayerData(viewerLayer));
+        } else {
+            return g.getFontMetrics().stringWidth(parseNode.getData().getName());
+        }
+    }
+
+    protected void drawString(ParseNodeDrawable parseNode, Graphics g, int x, int y){
+        if (parseNode.numberOfChildren() == 0){
+            g.drawString(parseNode.getLayerData(viewerLayer), x, y);
+        } else {
+            g.drawString(parseNode.getData().getName(), x, y);
+        }
+    }
+
+    protected void setArea(ParseNodeDrawable parseNode, int x, int y, int stringSize){
+        parseNode.setArea(x - 5, y - 15, stringSize + 10, 20);
     }
 
 }
