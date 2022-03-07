@@ -139,8 +139,8 @@ public class TreeMetaMorphemeMoverPanel extends TreeStructureEditorPanel {
         CubicCurve2D.Double cubicCurve;
         super.paintComponent(g);
         if (dragged && previousNode != null){
-            startX = previousNode.getArea().x + previousNode.getArea().width / 2;
-            startY = previousNode.getArea().y + 20 * (previousNode.getSelectedIndex() + 1);
+            startX = previousNode.getArea().getX() + previousNode.getArea().getWidth() / 2;
+            startY = previousNode.getArea().getY() + 20 * (previousNode.getSelectedIndex() + 1);
             pointStart = new Point2D.Double(startX, startY);
             pointEnd = new Point2D.Double(dragX, dragY);
             if (dragY > startY){

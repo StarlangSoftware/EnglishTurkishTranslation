@@ -144,7 +144,7 @@ public class TreeAutoTransferPanel extends TreeStructureEditorPanel {
         list.setVisible(true);
         pane.setVisible(true);
         pane.getVerticalScrollBar().setValue(0);
-        pane.setBounds(node.getArea().x - 5, node.getArea().y + 50, 100, 90);
+        pane.setBounds(node.getArea().getX() - 5, node.getArea().getY() + 50, 100, 90);
         isEditing = true;
         this.repaint();
     }

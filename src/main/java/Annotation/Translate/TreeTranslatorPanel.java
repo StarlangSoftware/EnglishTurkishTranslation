@@ -162,8 +162,8 @@ public class TreeTranslatorPanel extends TreeStructureEditorPanel {
         pane.getVerticalScrollBar().setValue(0);
         editText.setToolTipText(node.getLayerInfo().getLayerData(ViewLayerType.ENGLISH_WORD));
         editText.setText(node.getLayerInfo().getLayerData(ViewLayerType.TURKISH_WORD));
-        editText.setBounds(node.getArea().x - 5, node.getArea().y + 20, 100, 30);
-        pane.setBounds(node.getArea().x - 5, node.getArea().y + 50, 100, 90);
+        editText.setBounds(node.getArea().getX() - 5, node.getArea().getY() + 20, 100, 30);
+        pane.setBounds(node.getArea().getX() - 5, node.getArea().getY() + 50, 100, 90);
         editText.setVisible(true);
         editText.requestFocus();
         isEditing = true;
