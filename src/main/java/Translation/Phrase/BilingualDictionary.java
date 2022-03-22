@@ -1,92 +1,59 @@
 package Translation.Phrase;
 
 import Dictionary.*;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import javax.swing.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
+import Xml.XmlDocument;
+import Xml.XmlElement;
 
 public class BilingualDictionary extends Dictionary {
 
-    private class ReadDictionaryTask extends SwingWorker{
-
-        protected Object doInBackground() throws Exception {
-            NamedNodeMap attributes;
-            String wordName, lexicalClass, meaningClass;
-            Node wordNode, rootNode, lexicalNode, translationNode;
-            DocumentBuilder builder = null;
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            try {
-                builder = factory.newDocumentBuilder();
-            } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-            }
-            Document doc = null;
-            TargetPhrase targetPhrase;
-            int parsedCount, totalCount;
-            try {
-                ClassLoader classLoader = getClass().getClassLoader();
-                doc = builder.parse(new InputSource(classLoader.getResourceAsStream(fileName)));
-            } catch (SAXException | IOException e) {
-                e.printStackTrace();
-            }
-            rootNode = doc.getFirstChild();
-            wordNode = rootNode.getFirstChild();
-            parsedCount = 0;
-            totalCount = rootNode.getChildNodes().getLength();
-            while (wordNode != null){
-                if (wordNode.hasAttributes()){
-                    attributes = wordNode.getAttributes();
-                    wordName = attributes.getNamedItem("name").getNodeValue();
-                    SourceWord sourceWord = new SourceWord(wordName);
-                    lexicalNode = wordNode.getFirstChild();
-                    while (lexicalNode != null){
-                        if (lexicalNode.getNodeName().equalsIgnoreCase("lexical")){
-                            attributes = lexicalNode.getAttributes();
-                            lexicalClass = attributes.getNamedItem("class").getNodeValue();
-                            translationNode = lexicalNode.getFirstChild();
-                            while (translationNode != null){
-                                if (translationNode.getNodeName().equalsIgnoreCase("meaning")){
-                                    if (translationNode.hasAttributes()){
-                                        meaningClass = translationNode.getAttributes().getNamedItem("class").getNodeValue();
-                                        targetPhrase = new TargetPhrase(lexicalClass, new WordMeaning(meaningClass, translationNode.getFirstChild().getNodeValue()));
-                                        sourceWord.addTranslation(targetPhrase);
-                                    } else {
-                                        targetPhrase = new TargetPhrase(lexicalClass, new WordMeaning(translationNode.getFirstChild().getNodeValue()));
-                                        sourceWord.addTranslation(targetPhrase);
-                                    }
-                                }
-                                translationNode = translationNode.getNextSibling();
-                            }
-                        }  else {
-                            if (lexicalNode.getNodeName().equalsIgnoreCase("meaning")){
-                                if (lexicalNode.hasAttributes()){
-                                    meaningClass = lexicalNode.getAttributes().getNamedItem("class").getNodeValue();
-                                    targetPhrase = new TargetPhrase(new WordMeaning(meaningClass, lexicalNode.getFirstChild().getNodeValue()));
+    private void readDictionary() {
+        String wordName, lexicalClass, meaningClass;
+        XmlElement wordNode, rootNode, lexicalNode, translationNode;
+        ClassLoader classLoader = getClass().getClassLoader();
+        XmlDocument doc = new XmlDocument(classLoader.getResourceAsStream(fileName));
+        doc.parse();
+        TargetPhrase targetPhrase;
+        rootNode = doc.getFirstChild();
+        wordNode = rootNode.getFirstChild();
+        while (wordNode != null){
+            if (wordNode.hasAttributes()){
+                wordName = wordNode.getAttributeValue("name");
+                SourceWord sourceWord = new SourceWord(wordName);
+                lexicalNode = wordNode.getFirstChild();
+                while (lexicalNode != null){
+                    if (lexicalNode.getName().equalsIgnoreCase("lexical")){
+                        lexicalClass = lexicalNode.getAttributeValue("class");
+                        translationNode = lexicalNode.getFirstChild();
+                        while (translationNode != null){
+                            if (translationNode.getName().equalsIgnoreCase("meaning")){
+                                if (translationNode.hasAttributes()){
+                                    meaningClass = translationNode.getAttributeValue("class");
+                                    targetPhrase = new TargetPhrase(lexicalClass, new WordMeaning(meaningClass, translationNode.getPcData()));
                                     sourceWord.addTranslation(targetPhrase);
                                 } else {
-                                    targetPhrase = new TargetPhrase(new WordMeaning(lexicalNode.getFirstChild().getNodeValue()));
+                                    targetPhrase = new TargetPhrase(lexicalClass, new WordMeaning(translationNode.getPcData()));
                                     sourceWord.addTranslation(targetPhrase);
                                 }
                             }
+                            translationNode = translationNode.getNextSibling();
                         }
-                        lexicalNode = lexicalNode.getNextSibling();
+                    }  else {
+                        if (lexicalNode.getName().equalsIgnoreCase("meaning")){
+                            if (lexicalNode.hasAttributes()){
+                                meaningClass = lexicalNode.getAttributeValue("class");
+                                targetPhrase = new TargetPhrase(new WordMeaning(meaningClass, lexicalNode.getPcData()));
+                                sourceWord.addTranslation(targetPhrase);
+                            } else {
+                                targetPhrase = new TargetPhrase(new WordMeaning(lexicalNode.getPcData()));
+                                sourceWord.addTranslation(targetPhrase);
+                            }
+                        }
                     }
-                    words.add(sourceWord);
+                    lexicalNode = lexicalNode.getNextSibling();
                 }
-                parsedCount++;
-                setProgress((100 * parsedCount) / totalCount);
-                wordNode = wordNode.getNextSibling();
+                words.add(sourceWord);
             }
-            return 0;
+            wordNode = wordNode.getNextSibling();
         }
     }
 
@@ -100,13 +67,7 @@ public class BilingualDictionary extends Dictionary {
     public BilingualDictionary(final String fileName, WordComparator comparator){
         super(comparator);
         this.fileName = fileName;
-        ReadDictionaryTask task = new ReadDictionaryTask();
-        task.execute();
-        try {
-            task.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        readDictionary();
         words.sort(comparator);
     }
 

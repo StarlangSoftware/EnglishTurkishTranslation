@@ -11,23 +11,15 @@ import Dictionary.EnglishWordComparator;
 import Dictionary.Word;
 import Dictionary.WordComparator;
 import ParseTree.ParseTree;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import Xml.XmlDocument;
+import Xml.XmlElement;
 
-import javax.swing.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 public class AutomaticTranslationDictionary extends Dictionary {
 
@@ -40,56 +32,30 @@ public class AutomaticTranslationDictionary extends Dictionary {
         super(comparator);
     }
 
-    private class ReadDictionaryTask extends SwingWorker{
-
-        public ReadDictionaryTask(){
-        }
-
-        protected Object doInBackground() throws Exception {
-            NamedNodeMap attributes;
-            String wordName, translation;
-            int count, parsedCount, totalCount;
-            Node wordNode, rootNode, translationNode;
-            DocumentBuilder builder = null;
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            try {
-                builder = factory.newDocumentBuilder();
-            } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-            }
-            Document doc = null;
-            try {
-                ClassLoader classLoader = getClass().getClassLoader();
-                doc = builder.parse(new InputSource(classLoader.getResourceAsStream(fileName)));
-            } catch (SAXException | IOException e) {
-                e.printStackTrace();
-            }
-            rootNode = doc.getFirstChild();
-            wordNode = rootNode.getFirstChild();
-            parsedCount = 0;
-            totalCount = rootNode.getChildNodes().getLength();
-            while (wordNode != null){
-                if (wordNode.hasAttributes()){
-                    attributes = wordNode.getAttributes();
-                    wordName = attributes.getNamedItem("name").getNodeValue();
-                    WordTranslations WordTranslations = new WordTranslations(wordName);
-                    translationNode = wordNode.getFirstChild();
-                    while (translationNode != null){
-                        if (translationNode.hasAttributes()){
-                            attributes = translationNode.getAttributes();
-                            translation = attributes.getNamedItem("name").getNodeValue();
-                            count = Integer.parseInt(attributes.getNamedItem("count").getNodeValue());
-                            WordTranslations.addTranslation(new Word(translation), count);
-                        }
-                        translationNode = translationNode.getNextSibling();
+    private void readDictionary() {
+        String wordName, translation;
+        int count;
+        XmlElement wordNode, rootNode, translationNode;
+        ClassLoader classLoader = getClass().getClassLoader();
+        XmlDocument doc = new XmlDocument(classLoader.getResourceAsStream(fileName));
+        rootNode = doc.getFirstChild();
+        wordNode = rootNode.getFirstChild();
+        while (wordNode != null){
+            if (wordNode.hasAttributes()){
+                wordName = wordNode.getAttributeValue("name");
+                WordTranslations WordTranslations = new WordTranslations(wordName);
+                translationNode = wordNode.getFirstChild();
+                while (translationNode != null){
+                    if (translationNode.hasAttributes()){
+                        translation = translationNode.getAttributeValue("name");
+                        count = Integer.parseInt(translationNode.getAttributeValue("count"));
+                        WordTranslations.addTranslation(new Word(translation), count);
                     }
-                    words.add(WordTranslations);
+                    translationNode = translationNode.getNextSibling();
                 }
-                parsedCount++;
-                setProgress((100 * parsedCount) / totalCount);
-                wordNode = wordNode.getNextSibling();
+                words.add(WordTranslations);
             }
-            return 0;
+            wordNode = wordNode.getNextSibling();
         }
     }
 
@@ -103,13 +69,7 @@ public class AutomaticTranslationDictionary extends Dictionary {
     public AutomaticTranslationDictionary(final String fileName, WordComparator comparator){
         super(comparator);
         this.fileName = fileName;
-        ReadDictionaryTask task = new ReadDictionaryTask();
-        task.execute();
-        try {
-            task.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        readDictionary();
         words.sort(comparator);
     }
 
