@@ -9,6 +9,7 @@ import AnnotatedTree.TreeBankDrawable;
 import Corpus.Sentence;
 import MorphologicalAnalysis.FsmMorphologicalAnalyzer;
 import ParseTree.ParseTree;
+import ParseTree.ParallelTreeBank;
 import Sampling.KFoldCrossValidation;
 import Translation.BleuMeasure;
 import Translation.Phrase.*;
@@ -18,33 +19,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class ParallelTreeBankDrawable {
-
-    private TreeBankDrawable fromTreeBank, toTreeBank;
-
-    private void removeDifferentTrees(){
-        int i, j;
-        i = 0;
-        j = 0;
-        while (i < fromTreeBank.size() && j < toTreeBank.size()){
-            if (fromTreeBank.get(i).getName().compareTo(toTreeBank.get(j).getName()) < 0){
-                fromTreeBank.removeTree(i);
-            } else {
-                if (toTreeBank.get(j).getName().compareTo(fromTreeBank.get(i).getName()) < 0){
-                    toTreeBank.removeTree(j);
-                } else {
-                    i++;
-                    j++;
-                }
-            }
-        }
-        while (i < fromTreeBank.size()){
-            fromTreeBank.removeTree(i);
-        }
-        while (j < toTreeBank.size()){
-            toTreeBank.removeTree(j);
-        }
-    }
+public class ParallelTreeBankDrawable extends ParallelTreeBank {
 
     public ParallelTreeBankDrawable(File folder1, File folder2){
         fromTreeBank = new TreeBankDrawable(folder1);
@@ -58,31 +33,11 @@ public class ParallelTreeBankDrawable {
         removeDifferentTrees();
     }
 
-    public int size(){
-        return fromTreeBank.size();
-    }
-
-    public ParseTreeDrawable fromTree(int index){
-        return fromTreeBank.get(index);
-    }
-
-    public ParseTreeDrawable toTree(int index){
-        return toTreeBank.get(index);
-    }
-
-    public TreeBankDrawable fromTreeBank(){
-        return fromTreeBank;
-    }
-
-    public TreeBankDrawable toTreeBank(){
-        return toTreeBank;
-    }
-
     public double interAnnotatorGlossAgreement(ViewLayerType viewLayerType){
         int agreement = 0, total = 0;
         for (int i = 0; i < fromTreeBank.size(); i++){
-            ParseTreeDrawable parseTree1 = fromTreeBank.get(i);
-            ParseTreeDrawable parseTree2 = toTreeBank.get(i);
+            ParseTreeDrawable parseTree1 = (ParseTreeDrawable) fromTreeBank.get(i);
+            ParseTreeDrawable parseTree2 = (ParseTreeDrawable) toTreeBank.get(i);
             total += parseTree1.leafCount();
             agreement += parseTree1.glossAgreementCount(parseTree2, viewLayerType);
         }
@@ -92,8 +47,8 @@ public class ParallelTreeBankDrawable {
     public double interAnnotatorStructureAgreement(){
         int agreement = 0, total = 0;
         for (int i = 0; i < fromTreeBank.size(); i++){
-            ParseTreeDrawable parseTree1 = fromTreeBank.get(i);
-            ParseTreeDrawable parseTree2 = toTreeBank.get(i);
+            ParseTreeDrawable parseTree1 = (ParseTreeDrawable) fromTreeBank.get(i);
+            ParseTreeDrawable parseTree2 = (ParseTreeDrawable) toTreeBank.get(i);
             total += parseTree1.nodeCountWithMultipleChildren();
             agreement += parseTree1.structureAgreementCount(parseTree2);
         }
@@ -112,14 +67,16 @@ public class ParallelTreeBankDrawable {
             stripPunctuation();
         }
         for (int i = 0; i < fromTreeBank.size(); i++){
-            ParseTreeDrawable testTreeCandidate = fromTreeBank.get(i);
-            ParseTreeDrawable testTreeCorrect = toTreeBank.get(i);
+            ParseTreeDrawable testTreeCandidate = (ParseTreeDrawable) fromTreeBank.get(i);
+            ParseTreeDrawable testTreeCorrect = (ParseTreeDrawable) toTreeBank.get(i);
             reorderMap.mlTranslate(testTreeCandidate);
             countCorrect = countCorrect + testTreeCandidate.score(testTreeCorrect);
             countTotal = countTotal + testTreeCandidate.nodeCountWithMultipleChildren();
         }
         System.out.println(countCorrect + " out of " + countTotal);
     }
+
+
 
     public void runTranslationExperiment(int maxStackSize, boolean optimalTree, int seed){
         PartialTranslation bestTranslation;
@@ -132,8 +89,8 @@ public class ParallelTreeBankDrawable {
             BleuMeasure bleu = new BleuMeasure();
             IBMModel1Turkish model = new IBMModel1Turkish();
             KFoldCrossValidation<ParseTree> fromCrossValidation, toCrossValidation;
-            fromCrossValidation = new KFoldCrossValidation<>(fromTreeBank.getParseTrees(), 10, seed);
-            toCrossValidation = new KFoldCrossValidation<>(toTreeBank.getParseTrees(), 10, seed);
+            fromCrossValidation = new KFoldCrossValidation<>(((TreeBankDrawable)fromTreeBank).getParseTrees(), 10, seed);
+            toCrossValidation = new KFoldCrossValidation<>(((TreeBankDrawable)toTreeBank).getParseTrees(), 10, seed);
             if (optimalTree){
                 concatWith = "optimal";
             } else {

@@ -34,11 +34,11 @@ public class TestAutoTransfer {
         AutoTransfer autoTransfer = new TurkishAutoTransfer();
         System.out.println("Parallel Treebank read. Now autotransfer...");
         for (int i = 0; i < treeBank.size(); i++){
-            ParseTreeDrawable parseTree = treeBank.fromTree(i);
+            ParseTreeDrawable parseTree = (ParseTreeDrawable) treeBank.fromTree(i);
             TreeModifier treeModifier = new TreeModifier(parseTree, new ConvertToLayeredFormat());
             treeModifier.modify();
             autoTransfer.autoTransfer(parseTree, new TransferredSentence(new File(TreeBankDrawable.TURKISH_PHRASE_PATH + parseTree.getName())));
-            ParseTreeDrawable correctTree = treeBank.toTree(i);
+            ParseTreeDrawable correctTree = (ParseTreeDrawable) treeBank.toTree(i);
             NodeDrawableCollector nodeDrawableCollector1 = new NodeDrawableCollector((ParseNodeDrawable) parseTree.getRoot(), new IsTurkishLeafNode());
             ArrayList<ParseNodeDrawable> leafList1 = nodeDrawableCollector1.collect();
             NodeDrawableCollector nodeDrawableCollector2 = new NodeDrawableCollector((ParseNodeDrawable) correctTree.getRoot(), new IsTurkishLeafNode());

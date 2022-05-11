@@ -5,6 +5,7 @@ import AnnotatedTree.ParseNodeDrawable;
 import AnnotatedTree.ParseTreeDrawable;
 import AnnotatedTree.Processor.Condition.IsLeafNode;
 import AnnotatedTree.Processor.NodeDrawableCollector;
+import AnnotatedTree.TreeBankDrawable;
 import Translation.Tree.ParallelTreeBankDrawable;
 
 import java.io.File;
@@ -18,9 +19,9 @@ public class TestAutoMetaMorphemeMover {
         AutoMetaMorphemeMover autoDisambiguator = new TurkishAutoMetaMorphemeMover();
         System.out.println("Parallel Treebank read. Now pos moving...");
         for (int i = 0; i < treeBank.size(); i++){
-            ParseTreeDrawable parseTree = treeBank.fromTree(i);
+            ParseTreeDrawable parseTree = (ParseTreeDrawable) treeBank.fromTree(i);
             autoDisambiguator.autoPosMove(parseTree);
-            ParseTreeDrawable correctTree = treeBank.toTree(i);
+            ParseTreeDrawable correctTree = (ParseTreeDrawable) treeBank.toTree(i);
             NodeDrawableCollector nodeDrawableCollector1 = new NodeDrawableCollector((ParseNodeDrawable) parseTree.getRoot(), new IsLeafNode());
             ArrayList<ParseNodeDrawable> leafList1 = nodeDrawableCollector1.collect();
             NodeDrawableCollector nodeDrawableCollector2 = new NodeDrawableCollector((ParseNodeDrawable) correctTree.getRoot(), new IsLeafNode());

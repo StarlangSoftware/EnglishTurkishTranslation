@@ -30,8 +30,8 @@ public class TestAutoTranslator {
         TreeToStringConverter treeToStringConverter;
         ParallelTreeBankDrawable treeBank = new ParallelTreeBankDrawable(new File(dataFolder + "/English"), new File(dataFolder + "/Turkish"), "." + pattern);
         KFoldCrossValidation<ParseTree> fromCrossValidation, toCrossValidation;
-        fromCrossValidation = new KFoldCrossValidation<>(treeBank.fromTreeBank().getParseTrees(), 10, 1);
-        toCrossValidation = new KFoldCrossValidation<>(treeBank.toTreeBank().getParseTrees(), 10, 1);
+        fromCrossValidation = new KFoldCrossValidation<>(((TreeBankDrawable) treeBank.fromTreeBank()).getParseTrees(), 10, 1);
+        toCrossValidation = new KFoldCrossValidation<>(((TreeBankDrawable) treeBank.toTreeBank()).getParseTrees(), 10, 1);
         System.out.println("Parallel Treebank read. Now translating...");
         try {
             for (int k = 0; k < 10; k++){
@@ -70,8 +70,8 @@ public class TestAutoTranslator {
         TreeToStringConverter treeToStringConverter;
         ParallelTreeBankDrawable treeBank = new ParallelTreeBankDrawable(new File(dataFolder + "/English"), new File(dataFolder + "/Turkish"), "." + pattern);
         KFoldCrossValidation<ParseTree> fromCrossValidation, toCrossValidation;
-        fromCrossValidation = new KFoldCrossValidation<>(treeBank.fromTreeBank().getParseTrees(), 10, 1);
-        toCrossValidation = new KFoldCrossValidation<>(treeBank.toTreeBank().getParseTrees(), 10, 1);
+        fromCrossValidation = new KFoldCrossValidation<>(((TreeBankDrawable)treeBank.fromTreeBank()).getParseTrees(), 10, 1);
+        toCrossValidation = new KFoldCrossValidation<>(((TreeBankDrawable)treeBank.toTreeBank()).getParseTrees(), 10, 1);
         System.out.println("Parallel Treebank read. Now translating...");
         try {
             for (int k = 0; k < 10; k++){
@@ -108,8 +108,8 @@ public class TestAutoTranslator {
         TurkishAutoTranslator translator;
         ParallelTreeBankDrawable treeBank = new ParallelTreeBankDrawable(new File(dataFolder + "/English"), new File(dataFolder + "/Turkish"), "." + pattern);
         KFoldCrossValidation<ParseTree> fromCrossValidation, toCrossValidation;
-        fromCrossValidation = new KFoldCrossValidation<>(treeBank.fromTreeBank().getParseTrees(), 10, 1);
-        toCrossValidation = new KFoldCrossValidation<>(treeBank.toTreeBank().getParseTrees(), 10, 1);
+        fromCrossValidation = new KFoldCrossValidation<>(((TreeBankDrawable)treeBank.fromTreeBank()).getParseTrees(), 10, 1);
+        toCrossValidation = new KFoldCrossValidation<>(((TreeBankDrawable)treeBank.toTreeBank()).getParseTrees(), 10, 1);
         System.out.println("Parallel Treebank read. Now translating...");
         for (int k = 0; k < 10; k++){
             int total = 0, agreement = 0;
@@ -136,8 +136,8 @@ public class TestAutoTranslator {
         TurkishAutoTranslator translator;
         ParallelTreeBankDrawable treeBank = new ParallelTreeBankDrawable(new File(dataFolder + "/English"), new File(dataFolder + "/Turkish"), "." + pattern);
         KFoldCrossValidation<ParseTree> fromCrossValidation, toCrossValidation;
-        fromCrossValidation = new KFoldCrossValidation<>(treeBank.fromTreeBank().getParseTrees(), 10, 1);
-        toCrossValidation = new KFoldCrossValidation<>(treeBank.toTreeBank().getParseTrees(), 10, 1);
+        fromCrossValidation = new KFoldCrossValidation<>(((TreeBankDrawable)treeBank.fromTreeBank()).getParseTrees(), 10, 1);
+        toCrossValidation = new KFoldCrossValidation<>(((TreeBankDrawable)treeBank.toTreeBank()).getParseTrees(), 10, 1);
         System.out.println("Parallel Treebank read. Now translating...");
         for (int k = 0; k < 10; k++){
             int tn = 0, tp = 0, fp = 0, fn = 0;
