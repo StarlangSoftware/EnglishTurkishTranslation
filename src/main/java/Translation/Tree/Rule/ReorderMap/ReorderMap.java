@@ -38,8 +38,6 @@ public class ReorderMap {
             int total = 0;
             for (NodePermutation p:ps.nodePermutations)
                 total += p.count;
-            for (NodePermutation p:ps.nodePermutations)
-                p.logProb = Math.log(((double)(p.count))/((double)total));
         }
     }
 
@@ -80,7 +78,6 @@ public class ReorderMap {
                 currentChildSentences = tmp;
             }
             for (ScoredSentence s : currentChildSentences) {
-                s.addLogProb(nodePermutation.logProb);
                 sentences.add(s);
             }
         }

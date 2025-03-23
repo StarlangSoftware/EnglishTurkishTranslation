@@ -168,7 +168,7 @@ public class TreeMetaMorphemeMoverPanel extends TreeStructureEditorPanel {
                     if (g.getFontMetrics().stringWidth(parseNode.getLayerInfo().getLayerInfoAt(ViewLayerType.META_MORPHEME_MOVED, i)) > stringSize){
                         stringSize = g.getFontMetrics().stringWidth(parseNode.getLayerInfo().getLayerInfoAt(ViewLayerType.META_MORPHEME_MOVED, i));
                     }
-                } catch (LayerNotExistsException | LayerItemNotExistsException | WordNotExistsException e) {
+                } catch (LayerNotExistsException | LayerItemNotExistsException e) {
                     return g.getFontMetrics().stringWidth(parseNode.getData().getName());
                 }
             return stringSize;
@@ -190,7 +190,7 @@ public class TreeMetaMorphemeMoverPanel extends TreeStructureEditorPanel {
                 try {
                     g.drawString(parseNode.getLayerInfo().getLayerInfoAt(ViewLayerType.META_MORPHEME_MOVED, i), x, y);
                     y += 20;
-                } catch (LayerNotExistsException | LayerItemNotExistsException | WordNotExistsException e) {
+                } catch (LayerNotExistsException | LayerItemNotExistsException e) {
                     g.drawString(parseNode.getData().getName(), x, y);
                 }
             }
