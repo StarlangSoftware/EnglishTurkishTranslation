@@ -1,3 +1,9 @@
+Translated Datasets
+============
+[Penn-TreeBank 15 Words](http://104.247.163.162/nlptoolkit/turkish-treebank1.html)
+
+[Penn-TreeBank 20 Words](http://104.247.163.162/nlptoolkit/turkish-treebank2.html)
+
 For Developers
 ============
 
