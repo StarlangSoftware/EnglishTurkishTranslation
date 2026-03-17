@@ -1,8 +1,12 @@
 Translated Datasets
 ============
-[Penn-TreeBank 15 Words](http://104.247.163.162/nlptoolkit/turkish-treebank1.html)
+[Penn-TreeBank 15 Words Turkish Translation](http://104.247.163.162/nlptoolkit/turkish-treebank1.html)
 
-[Penn-TreeBank 20 Words](http://104.247.163.162/nlptoolkit/turkish-treebank2.html)
+[Penn-TreeBank 20 Words Turkish Translation](http://104.247.163.162/nlptoolkit/turkish-treebank2.html)
+
+[Penn-TreeBank 15 Words Persian Translation (Version 1)](http://104.247.163.162/nlptoolkit/persian-treebank1.html)
+
+[Penn-TreeBank 15 Words Persian Translation (Version 2)](http://104.247.163.162/nlptoolkit/persian-treebank2.html)
 
 For Developers
 ============
